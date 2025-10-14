@@ -20,31 +20,11 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   final List<NavItem> _navItems = [
-    NavItem(
-      icon: Icons.home,
-      label: 'Anasayfa',
-      route: '/',
-    ),
-    NavItem(
-      icon: Icons.movie,
-      label: 'Filmler',
-      route: '/',
-    ),
-    NavItem(
-      icon: Icons.tv,
-      label: 'Diziler',
-      route: '/',
-    ),
-    NavItem(
-      icon: Icons.search,
-      label: 'Arama',
-      route: '/',
-    ),
-    NavItem(
-      icon: Icons.person,
-      label: 'Profil',
-      route: '/',
-    ),
+    NavItem(icon: Icons.home, label: 'Anasayfa', route: '/'),
+    NavItem(icon: Icons.movie, label: 'Filmler', route: '/'),
+    NavItem(icon: Icons.tv, label: 'Diziler', route: '/'),
+    NavItem(icon: Icons.search, label: 'Arama', route: '/'),
+    NavItem(icon: Icons.person, label: 'Profil', route: '/'),
   ];
 
   @override
@@ -93,7 +73,7 @@ class _NavBarState extends State<NavBar> {
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
             blurRadius: 10,
-            offset: const Offset(-2, 0),
+            offset: const Offset(2, 0), // Sağdan sola gölge
           ),
         ],
       ),
@@ -101,7 +81,7 @@ class _NavBarState extends State<NavBar> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(_navItems.length, (index) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: _buildNavButton(
               item: _navItems[index],
               index: index,
@@ -119,6 +99,8 @@ class _NavBarState extends State<NavBar> {
     required bool isMobile,
   }) {
     final isSelected = widget.isFocused && widget.focusedIndex == index;
+    final currentPath = GoRouterState.of(context).uri.path;
+    final isActive = currentPath == item.route;
 
     return GestureDetector(
       onTap: () {
@@ -129,44 +111,65 @@ class _NavBarState extends State<NavBar> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.all(isSelected ? 12 : 10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white.withOpacity(0.2) : Colors.transparent,
+          color: isSelected
+              ? Colors.red.withOpacity(0.3)
+              : (isActive ? Colors.red.withOpacity(0.15) : Colors.transparent),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.white : Colors.transparent,
+            color: isSelected
+                ? Colors.red
+                : (isActive ? Colors.red.withOpacity(0.5) : Colors.transparent),
             width: 2,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.3),
-                    blurRadius: 15,
-                    spreadRadius: 3,
+                    color: Colors.red.withOpacity(0.5),
+                    blurRadius: 20,
+                    spreadRadius: 2,
                   ),
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.15),
-                    blurRadius: 20,
-                    spreadRadius: 5,
+                    color: Colors.red.withOpacity(0.3),
+                    blurRadius: 30,
+                    spreadRadius: 4,
                   ),
                 ]
-              : [],
+              : (isActive
+                  ? [
+                      BoxShadow(
+                        color: Colors.red.withOpacity(0.2),
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                  : []),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               item.icon,
-              color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
-              size: isSelected ? 28 : 24,
+              color: isSelected
+                  ? Colors.white
+                  : (isActive
+                      ? Colors.red.shade300
+                      : Colors.white.withOpacity(0.6)),
+              size: 26,
             ),
             const SizedBox(height: 4),
             Text(
               item.label,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
-                fontSize: isSelected ? 12 : 10,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected
+                    ? Colors.white
+                    : (isActive
+                        ? Colors.red.shade300
+                        : Colors.white.withOpacity(0.6)),
+                fontSize: 10,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ],
@@ -181,9 +184,5 @@ class NavItem {
   final String label;
   final String route;
 
-  NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-  });
+  NavItem({required this.icon, required this.label, required this.route});
 }

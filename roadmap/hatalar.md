@@ -9,3 +9,11 @@
 - [x] 2. karta focus iken 3. kart üstte kalıyor. normalde 1 ve 3 daha altta olmalı
 - [x] 1. satırdayken yukarı ok tuşuna basınca hero bannera geçse de scrool yukarı çıkmıyor. hero banner görünmüyor.
 - [x] kategoriler heronun altında olmasına rağmen heroda yukarı ok tuşuna basınca kategoriye geçmiyor. (DÜZELTİLDİ - Navigasyon mantığı hero→kategoriler aşağı ok, kategoriler→hero yukarı ok olarak düzeltildi)
+- [x] navbarı sola al (DÜZELTİLDİ - Navbar desktop'ta sola taşındı)
+- [x] navbarda aşağı yukarı tuşları ile geçiş yapılmıyor (DÜZELTİLDİ - Desktop'ta yukarı/aşağı ok ile navbar item'ları arasında gezinme eklendi)
+- [x] navbar focus olduğunda scale efektinden dolayı yazı alta kayıyor. onun yerine renk değişimi ve glow efekti olabilir (DÜZELTİLDİ - Scale kaldırıldı, kırmızı renk + glow efekti eklendi)
+- [x] navbarda aktif sayfa belli değil (DÜZELTİLDİ - Aktif sayfa kırmızı border ve hafif glow ile işaretleniyor)
+- [x] navbar olduğundan dolayı header'ı kaldır (DÜZELTİLDİ - AppBar tamamen kaldırıldı)
+
+- [ ] populer filmler slider'ından kategorilere geçerken scrool kaymıyor
+- [ ] film de
