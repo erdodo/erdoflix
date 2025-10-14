@@ -65,11 +65,17 @@ class TurService {
   }
 
   /// Belirli bir türe ait filmleri getirir
-  Future<List<Film>> getFilmlerByTur(int turId, {int page = 1, int pageSize = 20}) async {
+  Future<List<Film>> getFilmlerByTur(
+    int turId, {
+    int page = 1,
+    int pageSize = 20,
+  }) async {
     try {
       // Türe ait filmleri çekmek için turler/{turId}/film_id:list endpoint'i kullan
       final response = await http.get(
-        Uri.parse('$baseUrl/turler/$turId/film_id:list?page=$page&pageSize=$pageSize&appends=turler'),
+        Uri.parse(
+          '$baseUrl/turler/$turId/film_id:list?page=$page&pageSize=$pageSize&appends=turler',
+        ),
         headers: _getHeaders(),
       );
 
@@ -87,7 +93,10 @@ class TurService {
   }
 
   /// Metadata ile birlikte türleri getirir (toplam sayı vs.)
-  Future<Map<String, dynamic>> getTurlerWithMeta({int page = 1, int pageSize = 100}) async {
+  Future<Map<String, dynamic>> getTurlerWithMeta({
+    int page = 1,
+    int pageSize = 100,
+  }) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/turler:list?page=$page&pageSize=$pageSize'),
@@ -97,14 +106,17 @@ class TurService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         return {
-          'data': (jsonData['data'] as List<dynamic>?)
+          'data':
+              (jsonData['data'] as List<dynamic>?)
                   ?.map((item) => Tur.fromJson(item))
                   .toList() ??
               [],
           'meta': jsonData['meta'] ?? {},
         };
       } else {
-        throw Exception('Failed to load turler with meta: ${response.statusCode}');
+        throw Exception(
+          'Failed to load turler with meta: ${response.statusCode}',
+        );
       }
     } catch (e) {
       print('Error fetching turler with meta: $e');

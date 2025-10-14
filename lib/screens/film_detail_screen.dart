@@ -7,10 +7,7 @@ import '../services/api_service.dart';
 class FilmDetailScreen extends StatefulWidget {
   final Film film;
 
-  const FilmDetailScreen({
-    Key? key,
-    required this.film,
-  }) : super(key: key);
+  const FilmDetailScreen({Key? key, required this.film}) : super(key: key);
 
   @override
   State<FilmDetailScreen> createState() => _FilmDetailScreenState();
@@ -37,7 +34,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
 
     // Film detaylarını çek (turler ile birlikte)
     final detailedFilm = await _apiService.getFilm(widget.film.id);
-    
+
     // Benzer filmleri çek (aynı türdeki filmler)
     if (detailedFilm != null && detailedFilm.turler.isNotEmpty) {
       // İlk türe göre benzer filmler
@@ -82,12 +79,17 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
         // Benzer filmlerde gezinme
         if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
           setState(() {
-            _focusedSimilarFilm = 
-                (_focusedSimilarFilm + 1).clamp(0, _similarFilms.length - 1);
+            _focusedSimilarFilm = (_focusedSimilarFilm + 1).clamp(
+              0,
+              _similarFilms.length - 1,
+            );
           });
         } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
           setState(() {
-            _focusedSimilarFilm = (_focusedSimilarFilm - 1).clamp(0, _similarFilms.length - 1);
+            _focusedSimilarFilm = (_focusedSimilarFilm - 1).clamp(
+              0,
+              _similarFilms.length - 1,
+            );
           });
         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
           setState(() {
@@ -99,9 +101,8 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => FilmDetailScreen(
-                film: _similarFilms[_focusedSimilarFilm],
-              ),
+              builder: (context) =>
+                  FilmDetailScreen(film: _similarFilms[_focusedSimilarFilm]),
             ),
           );
         }
@@ -165,12 +166,10 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                             child: CachedNetworkImage(
                               imageUrl: film.arkaPlan!,
                               fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                color: Colors.grey[900],
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                color: Colors.grey[900],
-                              ),
+                              placeholder: (context, url) =>
+                                  Container(color: Colors.grey[900]),
+                              errorWidget: (context, url, error) =>
+                                  Container(color: Colors.grey[900]),
                             ),
                           ),
                         // Gradient Overlay
@@ -194,8 +193,11 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                           top: 40,
                           left: 20,
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back,
-                                color: Colors.white, size: 30),
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                              size: 30,
+                            ),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ),
@@ -231,7 +233,9 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                   if (film.turler.isNotEmpty) ...[
                                     const SizedBox(width: 16),
                                     Text(
-                                      film.turler.map((t) => t.baslik).join(', '),
+                                      film.turler
+                                          .map((t) => t.baslik)
+                                          .join(', '),
                                       style: TextStyle(
                                         color: Colors.white.withOpacity(0.8),
                                         fontSize: 16,
@@ -253,7 +257,10 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                           : Colors.white.withOpacity(0.9),
                                       borderRadius: BorderRadius.circular(4),
                                       border: _focusedButton == 0
-                                          ? Border.all(color: Colors.red, width: 3)
+                                          ? Border.all(
+                                              color: Colors.red,
+                                              width: 3,
+                                            )
                                           : null,
                                     ),
                                     child: Material(
@@ -268,8 +275,11 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: const [
-                                              Icon(Icons.play_arrow,
-                                                  color: Colors.black, size: 30),
+                                              Icon(
+                                                Icons.play_arrow,
+                                                color: Colors.black,
+                                                size: 30,
+                                              ),
                                               SizedBox(width: 8),
                                               Text(
                                                 'İzle',
@@ -295,7 +305,10 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                       ),
                                       borderRadius: BorderRadius.circular(4),
                                       border: _focusedButton == 1
-                                          ? Border.all(color: Colors.white, width: 3)
+                                          ? Border.all(
+                                              color: Colors.white,
+                                              width: 3,
+                                            )
                                           : null,
                                     ),
                                     child: Material(
@@ -310,7 +323,11 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: const [
-                                              Icon(Icons.add, color: Colors.white, size: 30),
+                                              Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
                                               SizedBox(width: 8),
                                               Text(
                                                 'Listeye Ekle',
@@ -375,7 +392,8 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                 itemCount: _similarFilms.length,
                                 itemBuilder: (context, index) {
                                   final similarFilm = _similarFilms[index];
-                                  final isFocused = _focusedButton == 2 && 
+                                  final isFocused =
+                                      _focusedButton == 2 &&
                                       _focusedSimilarFilm == index;
                                   return Container(
                                     width: 200,
@@ -386,12 +404,18 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                         decoration: BoxDecoration(
                                           border: isFocused
                                               ? Border.all(
-                                                  color: Colors.white, width: 3)
+                                                  color: Colors.white,
+                                                  width: 3,
+                                                )
                                               : null,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -399,39 +423,55 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                               // Poster
                                               AspectRatio(
                                                 aspectRatio: 2 / 3,
-                                                child: similarFilm.poster != null
+                                                child:
+                                                    similarFilm.poster != null
                                                     ? CachedNetworkImage(
                                                         imageUrl:
                                                             similarFilm.poster!,
                                                         fit: BoxFit.cover,
-                                                        placeholder: (context, url) =>
-                                                            Container(
-                                                          color: Colors.grey[800],
-                                                        ),
-                                                        errorWidget: (context, url,
-                                                                error) =>
-                                                            Container(
-                                                          color: Colors.grey[800],
-                                                          child: const Icon(
-                                                              Icons.movie,
-                                                              color: Colors.white54,
-                                                              size: 50),
-                                                        ),
+                                                        placeholder:
+                                                            (
+                                                              context,
+                                                              url,
+                                                            ) => Container(
+                                                              color: Colors
+                                                                  .grey[800],
+                                                            ),
+                                                        errorWidget:
+                                                            (
+                                                              context,
+                                                              url,
+                                                              error,
+                                                            ) => Container(
+                                                              color: Colors
+                                                                  .grey[800],
+                                                              child: const Icon(
+                                                                Icons.movie,
+                                                                color: Colors
+                                                                    .white54,
+                                                                size: 50,
+                                                              ),
+                                                            ),
                                                       )
                                                     : Container(
                                                         color: Colors.grey[800],
-                                                        child: const Icon(Icons.movie,
-                                                            color: Colors.white54,
-                                                            size: 50),
+                                                        child: const Icon(
+                                                          Icons.movie,
+                                                          color: Colors.white54,
+                                                          size: 50,
+                                                        ),
                                                       ),
                                               ),
                                               // Title
                                               Padding(
-                                                padding: const EdgeInsets.all(8.0),
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
                                                 child: Text(
                                                   similarFilm.baslik,
                                                   maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 14,

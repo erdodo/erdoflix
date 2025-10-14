@@ -30,16 +30,25 @@ baseUrl: https://app.erdoganyesil.org
 - [x] kategori sayfaları tasarımı (TAMAMLANDI - Grid layout, klavye navigasyonu, pagination)
 - [x] film detay sayfası tasarımı (TAMAMLANDI - Hero banner, metadata, benzer filmler)
 - [x] routing sistemi (TAMAMLANDI - go_router ile /film/:id ve /category/:id)
+- [x] navbar tasarımı (TAMAMLANDI)
+    - [x] mobil cihazlar için aşağıda bir navbar (filmler, diziler, anasayfa, arama, profil)
+    - [x] mobil ve üstü için sağ tarafta ortalanmış bir navbar
+    - [x] ok tuşları ile navbar elemanları arasında geçiş yapılabilmeli. ana sayfadan navbara ve navbardan ana sayfaya geçiş yapılabilmeli
+    - Özellikler:
+        - Mobil: Alt tarafta 70px yükseklikte yatay navbar
+        - Desktop: Sağ tarafta 80px genişlikte dikey navbar (orta hizada)
+        - 5 menü: Anasayfa, Filmler, Diziler, Arama, Profil (icon + label)
+        - Klavye kontrolü: Sağ/sol (mobil) veya yukarı/aşağı (desktop) ile gezinme
+        - Focus efekti: Scale, glow, border, arka plan animasyonu
+        - Desktop'ta en sağdaki içerikten sağ ok ile navbar'a geçiş
+        - Mobilde son film satırından aşağı ok ile navbar'a geçiş
+### 2
+
 - [ ] arama sayfası tasarımı
 - [ ] player sayfası tasarımı
     - [ ] player sayfası mümkünse cihazın kendi oynatıcısını kullanmalı
     - [ ] player sayfası mümkünse cihazın kendi altyazı ve ses seçeneklerini kullanmalı
     - [ ] player sayfası mümkünse cihazın kendi ileri, geri, duraklat, oynat kontrollerini kullanmalı
-### 2
-- [ ] navbar tasarımı
-    - [ ] mobil cihazlar için aşağıda bir navbar (filmler, diziler, anasayfa, arama, proffil)
-    - [ ] mobil ve üstü için sağ tarafta ortalanmış bir navbar.
-    - [ ] ok tuşları ile navbar elemanları arasında geçiş yapılabilmeli. ana sayfadan navbara ve navbardan ana sayfaya geçiş yapılabilmeli.
 - [ ] kullanıcı girişi ve kayıt sayfası tasarımı
 - [ ] kullanıcı profili sayfası tasarımı
 - [ ] kullanıcı ayarları sayfası tasarımı
