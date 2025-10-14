@@ -76,10 +76,10 @@ class TurService {
         "\$and": [
           {
             "turler": {
-              "id": {"\$eq": turId}
-            }
-          }
-        ]
+              "id": {"\$eq": turId},
+            },
+          },
+        ],
       });
 
       final response = await http.get(
