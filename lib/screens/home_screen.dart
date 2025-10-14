@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../models/film.dart';
+import '../models/tur.dart';
 import '../services/api_service.dart';
+import '../services/tur_service.dart';
 import '../widgets/film_row.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,11 +16,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ApiService _apiService = ApiService();
+  final TurService _turService = TurService();
 
   // Her kategori için ayrı film listeleri ve sayfa numaraları
   List<Film> _popularFilms = [];
   List<Film> _newFilms = [];
   List<Film> _recommendedFilms = [];
+  List<Tur> _turler = [];
 
   int _popularPage = 1;
   int _newPage = 1;
@@ -29,13 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingRecommended = false;
 
   // Fokus kontrolü için
-  int _focusedRow = -1; // -1: Hero banner, 0-2: Film satırları
+  int _focusedRow = -1; // -1: Hero banner, -2: Kategoriler, 0-2: Film satırları
   int _focusedColumn = 0;
   int _heroBannerFocusedButton = 0; // 0: İzle, 1: Detaylar
   final FocusNode _focusNode = FocusNode();
   final ScrollController _mainScrollController = ScrollController();
 
-  // Her satırın key'ini tutmak için
+  // Her satırın key'ini tutmak için (kategoriler + 3 film satırı)
+  final GlobalKey _categoryKey = GlobalKey();
   final List<GlobalKey> _rowKeys = [GlobalKey(), GlobalKey(), GlobalKey()];
 
   @override
@@ -59,12 +65,15 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoading = true;
     });
 
-    // İlk sayfalardaki filmleri yükle
+    // İlk sayfalardaki filmleri ve kategorileri yükle
+    final turlerFuture = _turService.getTurler(pageSize: 20);
     await Future.wait([
       _loadMorePopular(),
       _loadMoreNew(),
       _loadMoreRecommended(),
     ]);
+    
+    _turler = await turlerFuture;
 
     setState(() {
       _isLoading = false;
@@ -130,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        if (_focusedRow > -1) {
+        if (_focusedRow > -2) {
           _focusedRow--;
           _focusedColumn = 0;
           _heroBannerFocusedButton = 0;
@@ -138,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         if (_focusedRow < 2) {
-          // -1: Hero banner, 0-2: Film satırları
+          // -1: Hero banner, -2: Kategoriler, 0-2: Film satırları
           _focusedRow++;
           _focusedColumn = 0;
           _scrollToFocusedRow();
@@ -147,6 +156,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_focusedRow == -1) {
           // Hero banner butonları arasında gezin
           if (_heroBannerFocusedButton > 0) _heroBannerFocusedButton--;
+        } else if (_focusedRow == -2) {
+          // Kategoriler arasında gezin
+          if (_focusedColumn > 0) _focusedColumn--;
         } else {
           // Film kartları arasında gezin
           if (_focusedColumn > 0) _focusedColumn--;
@@ -156,6 +168,9 @@ class _HomeScreenState extends State<HomeScreen> {
           // Hero banner butonları arasında gezin
           if (_heroBannerFocusedButton < 1)
             _heroBannerFocusedButton++; // 2 buton var
+        } else if (_focusedRow == -2) {
+          // Kategoriler arasında gezin
+          if (_focusedColumn < _turler.length - 1) _focusedColumn++;
         } else {
           // Film kartları arasında gezin
           final maxColumns = _getFilmsForRow(_focusedRow).length;
@@ -167,6 +182,11 @@ class _HomeScreenState extends State<HomeScreen> {
           // Hero banner butonu tıklandı
           if (_popularFilms.isNotEmpty) {
             _onFilmTap(_popularFilms.first);
+          }
+        } else if (_focusedRow == -2) {
+          // Kategori tıklandı
+          if (_focusedColumn < _turler.length) {
+            context.go('/category/${_turler[_focusedColumn].id}');
           }
         } else {
           // Film kartı tıklandı
@@ -232,33 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onFilmTap(Film film) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: Text(film.baslik, style: const TextStyle(color: Colors.white)),
-        content: Text(
-          film.detay ?? 'Detay bilgisi bulunmamaktadır.',
-          style: const TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Kapat'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Oynatıcıya yönlendir
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Oynatıcı açılıyor...')),
-              );
-            },
-            child: const Text('İzle'),
-          ),
-        ],
-      ),
-    );
+    // Film detay sayfasına yönlendir
+    context.go('/film/${film.id}');
   }
 
   @override
@@ -302,7 +297,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     // Hero Banner
                     _buildHeroBanner(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
+                    // Kategoriler
+                    if (_turler.isNotEmpty) _buildCategoryRow(),
+                    const SizedBox(height: 30),
                     // Film satırları
                     FilmRow(
                       key: _rowKeys[0],
@@ -488,6 +486,78 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCategoryRow() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'Kategoriler',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 60,
+          child: ListView.builder(
+            key: _categoryKey,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _turler.length,
+            itemBuilder: (context, index) {
+              final tur = _turler[index];
+              final isFocused = _focusedRow == -2 && _focusedColumn == index;
+              return Container(
+                margin: const EdgeInsets.only(right: 12),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: isFocused
+                        ? Colors.red
+                        : Colors.grey[800],
+                    borderRadius: BorderRadius.circular(8),
+                    border: isFocused
+                        ? Border.all(color: Colors.white, width: 2)
+                        : null,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => context.go('/category/${tur.id}'),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        child: Center(
+                          child: Text(
+                            tur.baslik,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: isFocused
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

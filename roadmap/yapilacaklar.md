@@ -35,6 +35,10 @@ baseUrl: https://app.erdoganyesil.org
     - [ ] player sayfası mümkünse cihazın kendi altyazı ve ses seçeneklerini kullanmalı
     - [ ] player sayfası mümkünse cihazın kendi ileri, geri, duraklat, oynat kontrollerini kullanmalı
 ### 2
+- [ ] navbar tasarımı
+    - [ ] mobil cihazlar için aşağıda bir navbar (filmler, diziler, anasayfa, arama, proffil)
+    - [ ] mobil ve üstü için sağ tarafta ortalanmış bir navbar.
+    - [ ] ok tuşları ile navbar elemanları arasında geçiş yapılabilmeli. ana sayfadan navbara ve navbardan ana sayfaya geçiş yapılabilmeli.
 - [ ] kullanıcı girişi ve kayıt sayfası tasarımı
 - [ ] kullanıcı profili sayfası tasarımı
 - [ ] kullanıcı ayarları sayfası tasarımı
