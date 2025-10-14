@@ -42,10 +42,10 @@ class _NavBarState extends State<NavBar> {
     return Container(
       height: 70,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -68,10 +68,10 @@ class _NavBarState extends State<NavBar> {
     return Container(
       width: 80,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(2, 0), // Sağdan sola gölge
           ),
@@ -99,8 +99,6 @@ class _NavBarState extends State<NavBar> {
     required bool isMobile,
   }) {
     final isSelected = widget.isFocused && widget.focusedIndex == index;
-    final currentPath = GoRouterState.of(context).uri.path;
-    final isActive = currentPath == item.route;
 
     return GestureDetector(
       onTap: () {
@@ -111,65 +109,47 @@ class _NavBarState extends State<NavBar> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(10),
+        width: 60,
+        height: 60,
         decoration: BoxDecoration(
-          color: isSelected
-              ? Colors.red.withOpacity(0.3)
-              : (isActive ? Colors.red.withOpacity(0.15) : Colors.transparent),
+          color: isSelected ? Colors.red.withValues(alpha: 0.3) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected
-                ? Colors.red
-                : (isActive ? Colors.red.withOpacity(0.5) : Colors.transparent),
+            color: isSelected ? Colors.red : Colors.transparent,
             width: 2,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.5),
+                    color: Colors.red.withValues(alpha: 0.5),
                     blurRadius: 20,
                     spreadRadius: 2,
                   ),
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.3),
+                    color: Colors.red.withValues(alpha: 0.3),
                     blurRadius: 30,
                     spreadRadius: 4,
                   ),
                 ]
-              : (isActive
-                  ? [
-                      BoxShadow(
-                        color: Colors.red.withOpacity(0.2),
-                        blurRadius: 10,
-                        spreadRadius: 1,
-                      ),
-                    ]
-                  : []),
+              : [],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               item.icon,
-              color: isSelected
-                  ? Colors.white
-                  : (isActive
-                      ? Colors.red.shade300
-                      : Colors.white.withOpacity(0.6)),
-              size: 26,
+              color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
+              size: 24,
             ),
             const SizedBox(height: 4),
             Text(
               item.label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: isSelected
-                    ? Colors.white
-                    : (isActive
-                        ? Colors.red.shade300
-                        : Colors.white.withOpacity(0.6)),
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
+                fontSize: 9,
+                fontWeight: FontWeight.normal,
               ),
             ),
           ],

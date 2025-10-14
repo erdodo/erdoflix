@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import '../models/film.dart';
 import '../services/api_service.dart';
+import '../widgets/navbar.dart';
 
 class FilmDetailScreen extends StatefulWidget {
   final Film film;
@@ -20,6 +22,8 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
   bool _isLoading = true;
   int _focusedButton = 0; // 0: İzle, 1: Listeye Ekle, 2: Benzer Filmler
   int _focusedSimilarFilm = 0;
+  int _navbarFocusedIndex = 0;
+  bool _isNavbarFocused = false;
 
   @override
   void initState() {
@@ -54,6 +58,13 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
 
   void _handleKeyEvent(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
+      // Escape veya Backspace ile geri git
+      if (event.logicalKey == LogicalKeyboardKey.escape ||
+          event.logicalKey == LogicalKeyboardKey.backspace) {
+        context.go('/');
+        return;
+      }
+
       if (_focusedButton < 2) {
         // Butonlarda gezinme
         if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -61,9 +72,17 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
             _focusedButton = (_focusedButton + 1).clamp(0, 1);
           });
         } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-          setState(() {
-            _focusedButton = (_focusedButton - 1).clamp(0, 1);
-          });
+          if (_focusedButton == 0) {
+            // En sol buttondayken navbar'a geç
+            setState(() {
+              _isNavbarFocused = true;
+              _navbarFocusedIndex = 0;
+            });
+          } else {
+            setState(() {
+              _focusedButton = (_focusedButton - 1).clamp(0, 1);
+            });
+          }
         } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
           if (_similarFilms.isNotEmpty) {
             setState(() {
@@ -143,6 +162,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final film = _detailedFilm ?? widget.film;
+    final isMobile = MediaQuery.of(context).size.width < 800;
 
     return RawKeyboardListener(
       focusNode: FocusNode()..requestFocus(),
@@ -151,7 +171,23 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
         backgroundColor: Colors.black,
         body: _isLoading
             ? const Center(child: CircularProgressIndicator(color: Colors.red))
-            : SingleChildScrollView(
+            : Row(
+                children: [
+                  // Desktop navbar (solda)
+                  if (!isMobile)
+                    NavBar(
+                      focusedIndex: _navbarFocusedIndex,
+                      onFocusChanged: (index) {
+                        setState(() {
+                          _navbarFocusedIndex = index;
+                          _isNavbarFocused = true;
+                        });
+                      },
+                      isFocused: _isNavbarFocused,
+                    ),
+                  // Ana içerik
+                  Expanded(
+                    child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -182,7 +218,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
-                                Colors.black.withOpacity(0.7),
+                                Colors.black.withValues(alpha: 0.7),
                                 Colors.black,
                               ],
                             ),
@@ -226,7 +262,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                     Text(
                                       film.yayinTarihi!,
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.8),
+                                        color: Colors.white.withValues(alpha: 0.8),
                                         fontSize: 16,
                                       ),
                                     ),
@@ -237,7 +273,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                           .map((t) => t.baslik)
                                           .join(', '),
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.8),
+                                        color: Colors.white.withValues(alpha: 0.8),
                                         fontSize: 16,
                                       ),
                                     ),
@@ -254,7 +290,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                     decoration: BoxDecoration(
                                       color: _focusedButton == 0
                                           ? Colors.white
-                                          : Colors.white.withOpacity(0.9),
+                                          : Colors.white.withValues(alpha: 0.9),
                                       borderRadius: BorderRadius.circular(4),
                                       border: _focusedButton == 0
                                           ? Border.all(
@@ -368,7 +404,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                           Text(
                             film.detay ?? 'Açıklama bilgisi bulunmuyor.',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                               fontSize: 16,
                               height: 1.5,
                             ),
@@ -494,7 +530,23 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                     ),
                   ],
                 ),
+                    ),
+                  ),
+                ],
               ),
+        // Mobil navbar (altta)
+        bottomNavigationBar: isMobile
+            ? NavBar(
+                focusedIndex: _navbarFocusedIndex,
+                onFocusChanged: (index) {
+                  setState(() {
+                    _navbarFocusedIndex = index;
+                    _isNavbarFocused = true;
+                  });
+                },
+                isFocused: _isNavbarFocused,
+              )
+            : null,
       ),
     );
   }

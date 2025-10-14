@@ -14,6 +14,8 @@
 - [x] navbar focus olduğunda scale efektinden dolayı yazı alta kayıyor. onun yerine renk değişimi ve glow efekti olabilir (DÜZELTİLDİ - Scale kaldırıldı, kırmızı renk + glow efekti eklendi)
 - [x] navbarda aktif sayfa belli değil (DÜZELTİLDİ - Aktif sayfa kırmızı border ve hafif glow ile işaretleniyor)
 - [x] navbar olduğundan dolayı header'ı kaldır (DÜZELTİLDİ - AppBar tamamen kaldırıldı)
-
-- [ ] populer filmler slider'ından kategorilere geçerken scrool kaymıyor
-- [ ] film de
+- [x] populer filmler slider'ından kategorilere geçerken scrool kaymıyor (DÜZELTİLDİ - Kategori scroll handling eklendi, hero height + 30px)
+- [x] film detay ve kategori gibi alt sayfalara gidildiğinde navbar kaybolmasın ve geri butonu çalışmıyor (DÜZELTİLDİ - Her sayfaya navbar eklendi, Escape/Backspace ile geri dön)
+- [x] 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. (DÜZELTİLDİ - Tüm dosyalarda withValues(alpha:) kullanımına geçildi)
+- [x] navbar normalde sade ve renksiz olsun. focus olunca renkli ve glow efektli olsun. (DÜZELTİLDİ - Aktif sayfa renklendirmesi kaldırıldı, sadece focus'ta kırmızı+glow)
+- [x] navbarın şuan boyutları çok uyumsuz. hepsinin genişlik ve yükseklikleri aynı olsun. icon ve text ortalansın. (DÜZELTİLDİ - Sabit 60x60px boyut, merkezi hizalama)

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../models/tur.dart';
 import '../models/film.dart';
 import '../services/tur_service.dart';
 import '../widgets/film_card.dart';
+import '../widgets/navbar.dart';
 
 class CategoryScreen extends StatefulWidget {
   final Tur tur;
@@ -22,6 +24,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
   int _focusedIndex = 0;
   final int _itemsPerPage = 20;
   bool _hasMore = true;
+  int _navbarFocusedIndex = 0;
+  bool _isNavbarFocused = false;
 
   @override
   void initState() {
@@ -64,6 +68,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   void _handleKeyEvent(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
+      // Escape veya Backspace ile geri git
+      if (event.logicalKey == LogicalKeyboardKey.escape ||
+          event.logicalKey == LogicalKeyboardKey.backspace) {
+        context.go('/');
+        return;
+      }
+
       final int columns = (MediaQuery.of(context).size.width / 220).floor();
 
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -77,7 +88,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
           });
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        if (_focusedIndex > 0) {
+        if (_focusedIndex == 0 || (_focusedIndex % columns == 0)) {
+          // En soldaysak navbar'a geç
+          setState(() {
+            _isNavbarFocused = true;
+            _navbarFocusedIndex = 0;
+          });
+        } else if (_focusedIndex > 0) {
           setState(() {
             _focusedIndex--;
           });
@@ -130,27 +147,55 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 800;
+
     return RawKeyboardListener(
       focusNode: FocusNode()..requestFocus(),
       onKey: (event) => _handleKeyEvent(event),
       child: Scaffold(
         backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          title: Text(
-            widget.tur.baslik,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        body: _isLoading && _films.isEmpty
+        body: Row(
+          children: [
+            // Desktop navbar (solda)
+            if (!isMobile)
+              NavBar(
+                focusedIndex: _navbarFocusedIndex,
+                onFocusChanged: (index) {
+                  setState(() {
+                    _navbarFocusedIndex = index;
+                    _isNavbarFocused = true;
+                  });
+                },
+                isFocused: _isNavbarFocused,
+              ),
+            // Ana içerik
+            Expanded(
+              child: Column(
+                children: [
+                  // Üst başlık
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => context.go('/'),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          widget.tur.baslik,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Film grid
+                  Expanded(
+                    child: _isLoading && _films.isEmpty
             ? const Center(child: CircularProgressIndicator(color: Colors.red))
             : _films.isEmpty
             ? const Center(
@@ -195,6 +240,25 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   ],
                 ),
               ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        // Mobil navbar (altta)
+        bottomNavigationBar: isMobile
+            ? NavBar(
+                focusedIndex: _navbarFocusedIndex,
+                onFocusChanged: (index) {
+                  setState(() {
+                    _navbarFocusedIndex = index;
+                    _isNavbarFocused = true;
+                  });
+                },
+                isFocused: _isNavbarFocused,
+              )
+            : null,
       ),
     );
   }

@@ -319,6 +319,19 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
+      // Kategorilere geçildiğinde
+      if (_focusedRow == -2) {
+        // Hero banner yüksekliği + padding
+        final heroHeight = 500 + 30;
+
+        _mainScrollController.animateTo(
+          heroHeight.toDouble(),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        return;
+      }
+
       if (_rowKeys[_focusedRow].currentContext != null) {
         final RenderBox renderBox =
             _rowKeys[_focusedRow].currentContext!.findRenderObject()
