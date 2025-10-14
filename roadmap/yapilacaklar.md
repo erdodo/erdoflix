@@ -21,14 +21,15 @@ baseUrl: https://app.erdoganyesil.org
 
 
 # roadmap
-### 1
-- [x] ana sayfa tasarımı (TAMAMLANDI - Netflix tarzı hero banner + 3 film satırı)
-- [x] API entegrasyonu (TAMAMLANDI - Film listeleme, pagination, metadata)
-- [x] klavye navigasyonu (TAMAMLANDI - 4 yön + Enter/Space ile tam kontrol)
+### 1 ✅ TAMAMLANDI
+- [x] ana sayfa tasarımı (TAMAMLANDI - Netflix tarzı hero banner + kategori menüsü + 3 film satırı)
+- [x] API entegrasyonu (TAMAMLANDI - Film, kategori listeleme, pagination, metadata)
+- [x] klavye navigasyonu (TAMAMLANDI - 4 yön + Enter/Space ile tam kontrol, kategoriler dahil)
 - [x] infinity scroll (TAMAMLANDI - Her satırda 20'şer film, otomatik yükleme)
 - [x] focus efektleri ve animasyonlar (TAMAMLANDI - Scale, glow, border, smooth scroll)
-- [ ] kategori sayfaları tasarımı
-- [ ] film detay sayfası tasarımı
+- [x] kategori sayfaları tasarımı (TAMAMLANDI - Grid layout, klavye navigasyonu, pagination)
+- [x] film detay sayfası tasarımı (TAMAMLANDI - Hero banner, metadata, benzer filmler)
+- [x] routing sistemi (TAMAMLANDI - go_router ile /film/:id ve /category/:id)
 - [ ] arama sayfası tasarımı
 - [ ] player sayfası tasarımı
     - [ ] player sayfası mümkünse cihazın kendi oynatıcısını kullanmalı
