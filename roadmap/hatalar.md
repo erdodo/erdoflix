@@ -8,3 +8,4 @@
 - [x] focus efektinde gölgeler çok fazla daha da azaltılabilir
 - [x] 2. karta focus iken 3. kart üstte kalıyor. normalde 1 ve 3 daha altta olmalı
 - [x] 1. satırdayken yukarı ok tuşuna basınca hero bannera geçse de scrool yukarı çıkmıyor. hero banner görünmüyor.
+- [x] kategoriler heronun altında olmasına rağmen heroda yukarı ok tuşuna basınca kategoriye geçmiyor. (DÜZELTİLDİ - Navigasyon mantığı hero→kategoriler aşağı ok, kategoriler→hero yukarı ok olarak düzeltildi)

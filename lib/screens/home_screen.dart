@@ -6,6 +6,7 @@ import '../models/tur.dart';
 import '../services/api_service.dart';
 import '../services/tur_service.dart';
 import '../widgets/film_row.dart';
+import '../widgets/navbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,9 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingRecommended = false;
 
   // Fokus kontrolü için
-  int _focusedRow = -1; // -1: Hero banner, -2: Kategoriler, 0-2: Film satırları
+  int _focusedRow = -1; // -1: Hero banner, -2: Kategoriler, 0-2: Film satırları, -3: Navbar
   int _focusedColumn = 0;
   int _heroBannerFocusedButton = 0; // 0: İzle, 1: Detaylar
+  int _navbarFocusedIndex = 0; // Navbar içinde hangi item seçili
+  bool _isNavbarFocused = false;
   final FocusNode _focusNode = FocusNode();
   final ScrollController _mainScrollController = ScrollController();
 
@@ -72,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _loadMoreNew(),
       _loadMoreRecommended(),
     ]);
-    
+
     _turler = await turlerFuture;
 
     setState(() {
@@ -138,22 +141,68 @@ class _HomeScreenState extends State<HomeScreen> {
     if (event is! RawKeyDownEvent) return;
 
     setState(() {
+      final isMobile = MediaQuery.of(context).size.width < 800;
+
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        if (_focusedRow > -2) {
+        if (_isNavbarFocused && !isMobile) {
+          // Desktop navbar'dan yukarı çıkılamaz
+          return;
+        } else if (_focusedRow > 0) {
+          // Film satırlarından yukarı çık
           _focusedRow--;
+          _focusedColumn = 0;
+          _heroBannerFocusedButton = 0;
+          _scrollToFocusedRow();
+        } else if (_focusedRow == 0) {
+          // İlk film satırından kategorilere geç
+          _focusedRow = -2;
+          _focusedColumn = 0;
+          _scrollToFocusedRow();
+        } else if (_focusedRow == -2) {
+          // Kategorilerden hero banner'a geç
+          _focusedRow = -1;
           _focusedColumn = 0;
           _heroBannerFocusedButton = 0;
           _scrollToFocusedRow();
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        if (_focusedRow < 2) {
-          // -1: Hero banner, -2: Kategoriler, 0-2: Film satırları
+        if (_isNavbarFocused && isMobile) {
+          // Mobil navbar'dan aşağı çıkılamaz
+          return;
+        } else if (_focusedRow == -1) {
+          // Hero banner'dan kategorilere geç
+          _focusedRow = -2;
+          _focusedColumn = 0;
+          _scrollToFocusedRow();
+        } else if (_focusedRow == -2) {
+          // Kategorilerden ilk film satırına geç
+          _focusedRow = 0;
+          _focusedColumn = 0;
+          _scrollToFocusedRow();
+        } else if (_focusedRow == 2) {
+          // Son film satırından navbar'a geç (sadece mobilde)
+          if (isMobile) {
+            _isNavbarFocused = true;
+            _navbarFocusedIndex = 0;
+          }
+        } else if (_focusedRow < 2) {
+          // Film satırları arasında gezin
           _focusedRow++;
           _focusedColumn = 0;
           _scrollToFocusedRow();
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        if (_focusedRow == -1) {
+        if (_isNavbarFocused) {
+          // Navbar içinde gezin (mobilde yatay)
+          if (isMobile && _navbarFocusedIndex > 0) {
+            _navbarFocusedIndex--;
+          } else if (!isMobile) {
+            // Desktop'ta soldan içerik alanına geç
+            _isNavbarFocused = false;
+            _focusedRow = 0;
+            _focusedColumn = 0;
+          }
+        } else if (_focusedRow == -1) {
           // Hero banner butonları arasında gezin
           if (_heroBannerFocusedButton > 0) _heroBannerFocusedButton--;
         } else if (_focusedRow == -2) {
@@ -164,21 +213,58 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_focusedColumn > 0) _focusedColumn--;
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        if (_focusedRow == -1) {
+        if (_isNavbarFocused) {
+          // Navbar içinde gezin
+          if (isMobile && _navbarFocusedIndex < 4) {
+            _navbarFocusedIndex++; // 5 item var (0-4)
+          }
+        } else if (_focusedRow == -1) {
           // Hero banner butonları arasında gezin
           if (_heroBannerFocusedButton < 1)
             _heroBannerFocusedButton++; // 2 buton var
         } else if (_focusedRow == -2) {
           // Kategoriler arasında gezin
-          if (_focusedColumn < _turler.length - 1) _focusedColumn++;
+          if (_focusedColumn < _turler.length - 1) {
+            _focusedColumn++;
+          } else if (!isMobile) {
+            // Desktop'ta en sağdayken navbar'a geç
+            _isNavbarFocused = true;
+            _navbarFocusedIndex = 0;
+          }
         } else {
           // Film kartları arasında gezin
           final maxColumns = _getFilmsForRow(_focusedRow).length;
-          if (_focusedColumn < maxColumns - 1) _focusedColumn++;
+          if (_focusedColumn < maxColumns - 1) {
+            _focusedColumn++;
+          } else if (!isMobile) {
+            // Desktop'ta en sağdayken navbar'a geç
+            _isNavbarFocused = true;
+            _navbarFocusedIndex = 0;
+          }
         }
       } else if (event.logicalKey == LogicalKeyboardKey.enter ||
           event.logicalKey == LogicalKeyboardKey.space) {
-        if (_focusedRow == -1) {
+        if (_isNavbarFocused) {
+          // Navbar item'ına tıklandı
+          // Şu an hepsi anasayfaya yönlendiriyor, ileride değiştirilecek
+          switch (_navbarFocusedIndex) {
+            case 0: // Anasayfa
+              context.go('/');
+              break;
+            case 1: // Filmler
+              context.go('/');
+              break;
+            case 2: // Diziler
+              context.go('/');
+              break;
+            case 3: // Arama
+              context.go('/');
+              break;
+            case 4: // Profil
+              context.go('/');
+              break;
+          }
+        } else if (_focusedRow == -1) {
           // Hero banner butonu tıklandı
           if (_popularFilms.isNotEmpty) {
             _onFilmTap(_popularFilms.first);
@@ -258,6 +344,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 800;
+
     return RawKeyboardListener(
       focusNode: _focusNode,
       onKey: _handleKeyEvent,
@@ -291,50 +379,91 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator(color: Colors.red))
-            : SingleChildScrollView(
-                controller: _mainScrollController,
-                child: Column(
-                  children: [
-                    // Hero Banner
-                    _buildHeroBanner(),
-                    const SizedBox(height: 30),
-                    // Kategoriler
-                    if (_turler.isNotEmpty) _buildCategoryRow(),
-                    const SizedBox(height: 30),
-                    // Film satırları
-                    FilmRow(
-                      key: _rowKeys[0],
-                      title: 'Popüler Filmler',
-                      films: _getFilmsForRow(0),
-                      onFilmTap: _onFilmTap,
-                      isFocused: _focusedRow == 0,
-                      focusedIndex: _focusedRow == 0 ? _focusedColumn : -1,
-                      onLoadMore: _loadMorePopular,
+            : Row(
+                children: [
+                  // Ana içerik
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: _mainScrollController,
+                      child: Column(
+                        children: [
+                          // Hero Banner
+                          _buildHeroBanner(),
+                          const SizedBox(height: 30),
+                          // Kategoriler
+                          if (_turler.isNotEmpty) _buildCategoryRow(),
+                          const SizedBox(height: 30),
+                          // Film satırları
+                          FilmRow(
+                            key: _rowKeys[0],
+                            title: 'Popüler Filmler',
+                            films: _getFilmsForRow(0),
+                            onFilmTap: _onFilmTap,
+                            isFocused: _focusedRow == 0 && !_isNavbarFocused,
+                            focusedIndex:
+                                _focusedRow == 0 && !_isNavbarFocused
+                                    ? _focusedColumn
+                                    : -1,
+                            onLoadMore: _loadMorePopular,
+                          ),
+                          const SizedBox(height: 20),
+                          FilmRow(
+                            key: _rowKeys[1],
+                            title: 'Yeni Çıkanlar',
+                            films: _getFilmsForRow(1),
+                            onFilmTap: _onFilmTap,
+                            isFocused: _focusedRow == 1 && !_isNavbarFocused,
+                            focusedIndex:
+                                _focusedRow == 1 && !_isNavbarFocused
+                                    ? _focusedColumn
+                                    : -1,
+                            onLoadMore: _loadMoreNew,
+                          ),
+                          const SizedBox(height: 20),
+                          FilmRow(
+                            key: _rowKeys[2],
+                            title: 'Önerilen Filmler',
+                            films: _getFilmsForRow(2),
+                            onFilmTap: _onFilmTap,
+                            isFocused: _focusedRow == 2 && !_isNavbarFocused,
+                            focusedIndex:
+                                _focusedRow == 2 && !_isNavbarFocused
+                                    ? _focusedColumn
+                                    : -1,
+                            onLoadMore: _loadMoreRecommended,
+                          ),
+                          SizedBox(height: isMobile ? 90 : 40),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    FilmRow(
-                      key: _rowKeys[1],
-                      title: 'Yeni Çıkanlar',
-                      films: _getFilmsForRow(1),
-                      onFilmTap: _onFilmTap,
-                      isFocused: _focusedRow == 1,
-                      focusedIndex: _focusedRow == 1 ? _focusedColumn : -1,
-                      onLoadMore: _loadMoreNew,
+                  ),
+                  // Desktop navbar (sağda)
+                  if (!isMobile)
+                    NavBar(
+                      focusedIndex: _navbarFocusedIndex,
+                      onFocusChanged: (index) {
+                        setState(() {
+                          _navbarFocusedIndex = index;
+                          _isNavbarFocused = true;
+                        });
+                      },
+                      isFocused: _isNavbarFocused,
                     ),
-                    const SizedBox(height: 20),
-                    FilmRow(
-                      key: _rowKeys[2],
-                      title: 'Önerilen Filmler',
-                      films: _getFilmsForRow(2),
-                      onFilmTap: _onFilmTap,
-                      isFocused: _focusedRow == 2,
-                      focusedIndex: _focusedRow == 2 ? _focusedColumn : -1,
-                      onLoadMore: _loadMoreRecommended,
-                    ),
-                    const SizedBox(height: 40),
-                  ],
-                ),
+                ],
               ),
+        // Mobil navbar (altta)
+        bottomNavigationBar: isMobile
+            ? NavBar(
+                focusedIndex: _navbarFocusedIndex,
+                onFocusChanged: (index) {
+                  setState(() {
+                    _navbarFocusedIndex = index;
+                    _isNavbarFocused = true;
+                  });
+                },
+                isFocused: _isNavbarFocused,
+              )
+            : null,
       ),
     );
   }
@@ -519,9 +648,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    color: isFocused
-                        ? Colors.red
-                        : Colors.grey[800],
+                    color: isFocused ? Colors.red : Colors.grey[800],
                     borderRadius: BorderRadius.circular(8),
                     border: isFocused
                         ? Border.all(color: Colors.white, width: 2)
