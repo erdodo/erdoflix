@@ -1,3 +1,5 @@
+import 'tur.dart';
+
 class Film {
   final int id;
   final String baslik;
@@ -8,6 +10,7 @@ class Film {
   final String? yayinTarihi;
   final String? tmdbId;
   final String? imdbId;
+  final List<Tur> turler;
 
   Film({
     required this.id,
@@ -19,9 +22,18 @@ class Film {
     this.yayinTarihi,
     this.tmdbId,
     this.imdbId,
+    this.turler = const [],
   });
 
   factory Film.fromJson(Map<String, dynamic> json) {
+    // Türleri parse et
+    List<Tur> turlerList = [];
+    if (json['turler'] != null && json['turler'] is List) {
+      turlerList = (json['turler'] as List)
+          .map((turJson) => Tur.fromJson(turJson))
+          .toList();
+    }
+
     return Film(
       id: json['id'] ?? 0,
       baslik: json['baslik'] ?? '',
@@ -32,6 +44,7 @@ class Film {
       yayinTarihi: json['yayin_tarihi'],
       tmdbId: json['tmdb_id'],
       imdbId: json['imdb_id'],
+      turler: turlerList,
     );
   }
 
@@ -46,6 +59,8 @@ class Film {
       'yayin_tarihi': yayinTarihi,
       'tmdb_id': tmdbId,
       'imdb_id': imdbId,
+      'turler': turler.map((tur) => tur.toJson()).toList(),
     };
   }
 }
+

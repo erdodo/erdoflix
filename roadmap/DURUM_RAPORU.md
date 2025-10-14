@@ -162,6 +162,6 @@ dependencies:
 
 ---
 
-**Geliştirici**: Erdoğan Yeşil (AI Destekli)  
-**Proje Başlangıç**: 14 Ekim 2025  
+**Geliştirici**: Erdoğan Yeşil (AI Destekli)
+**Proje Başlangıç**: 14 Ekim 2025
 **Lisans**: [Belirtilmedi]
