@@ -1,0 +1,2682 @@
+{
+    "filmler": {
+        "openapi": "3.0.3",
+        "info": {
+            "title": "NocoBase API documentation",
+            "description": "",
+            "contact": {
+                "url": "https://github.com/nocobase/nocobase/issues"
+            },
+            "license": {
+                "name": "Core packages are Apache 2.0 & Plugins packages are AGPL 3.0 licensed.",
+                "url": "https://github.com/nocobase/nocobase#license"
+            },
+            "version": "1.8.14"
+        },
+        "externalDocs": {
+            "description": "Find out more about NocoBase",
+            "url": "https://docs.nocobase.com/api/http"
+        },
+        "components": {
+            "securitySchemes": {
+                "api-key": {
+                    "type": "http",
+                    "scheme": "bearer"
+                }
+            },
+            "schemas": {
+                "error": {
+                    "type": "object",
+                    "properties": {
+                        "errors": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "message": {
+                                        "description": "错误信息",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "filmler": {
+                    "type": "object",
+                    "properties": {
+                        "poster": {
+                            "type": "string"
+                        },
+                        "baslik": {
+                            "type": "string"
+                        },
+                        "imdb_id": {
+                            "type": "string"
+                        },
+                        "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "yayin_tarihi": {
+                            "type": "string"
+                        },
+                        "orjinal_baslik": {
+                            "type": "string"
+                        },
+                        "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "arka_plan": {
+                            "type": "string"
+                        },
+                        "detay": {
+                            "type": "string"
+                        },
+                        "tmdb_id": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "updatedById": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "createdById": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                },
+                "filmler.form": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/filmler"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "readOnly": true
+                                },
+                                "createdAt": {
+                                    "readOnly": true
+                                },
+                                "updatedAt": {
+                                    "readOnly": true
+                                },
+                                "updatedById": {
+                                    "readOnly": true
+                                },
+                                "createdById": {
+                                    "readOnly": true
+                                }
+                            }
+                        }
+                    ]
+                },
+                "film_kaynaklari": {
+                    "type": "object",
+                    "properties": {
+                        "kaynak_id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "url": {
+                            "type": "string"
+                        },
+                        "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "baslik": {
+                            "type": "string"
+                        },
+                        "updatedById": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "createdById": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                },
+                "film_kaynaklari.form": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/film_kaynaklari"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "readOnly": true
+                                },
+                                "updatedAt": {
+                                    "readOnly": true
+                                },
+                                "createdAt": {
+                                    "readOnly": true
+                                },
+                                "updatedById": {
+                                    "readOnly": true
+                                },
+                                "createdById": {
+                                    "readOnly": true
+                                }
+                            }
+                        }
+                    ]
+                },
+                "film_altyazilari": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "baslik": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "film_id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "updatedById": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "createdById": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                },
+                "film_altyazilari.form": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/film_altyazilari"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "readOnly": true
+                                },
+                                "updatedAt": {
+                                    "readOnly": true
+                                },
+                                "createdAt": {
+                                    "readOnly": true
+                                },
+                                "updatedById": {
+                                    "readOnly": true
+                                },
+                                "createdById": {
+                                    "readOnly": true
+                                }
+                            }
+                        }
+                    ]
+                },
+                "turler": {
+                    "type": "object",
+                    "properties": {
+                        "tmdb_id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "baslik": {
+                            "type": "string"
+                        },
+                        "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "id": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "updatedById": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "createdById": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                },
+                "turler.form": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/turler"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "readOnly": true
+                                },
+                                "updatedAt": {
+                                    "readOnly": true
+                                },
+                                "createdAt": {
+                                    "readOnly": true
+                                },
+                                "updatedById": {
+                                    "readOnly": true
+                                },
+                                "createdById": {
+                                    "readOnly": true
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "parameters": {
+                "collectionIndex": {
+                    "required": true,
+                    "name": "collectionIndex",
+                    "in": "path",
+                    "description": "collection index",
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "filterByTk": {
+                    "name": "filterByTk",
+                    "in": "query",
+                    "description": "filter by TK(default by ID)",
+                    "schema": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                },
+                "filterByTks": {
+                    "name": "filterByTk",
+                    "in": "query",
+                    "description": "filter by TKs(default by ID), example: `1,2,3`",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                },
+                "filter": {
+                    "name": "filter",
+                    "in": "query",
+                    "description": "filter items",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "sort": {
+                    "name": "sort",
+                    "in": "query",
+                    "description": "sort items by fields, example: `-field1,-field2,field3`",
+                    "schema": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "-id",
+                                    "createdAt"
+                                ]
+                            },
+                            {
+                                "type": "string",
+                                "example": "-id,createdAt"
+                            }
+                        ]
+                    }
+                },
+                "fields": {
+                    "name": "fields",
+                    "in": "query",
+                    "description": "select fields, example: `field1,field2`",
+                    "schema": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "id",
+                                    "createdAt"
+                                ]
+                            },
+                            {
+                                "type": "string",
+                                "example": "id,createdAt"
+                            }
+                        ]
+                    }
+                },
+                "except": {
+                    "name": "except",
+                    "in": "query",
+                    "description": "except fields in results, example: `field1,field2`",
+                    "schema": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "id",
+                                    "createdAt"
+                                ]
+                            },
+                            {
+                                "type": "string",
+                                "example": "id,createdAt"
+                            }
+                        ]
+                    }
+                },
+                "appends": {
+                    "name": "appends",
+                    "in": "query",
+                    "description": "append associations in results, example: `assoc1,assoc2`",
+                    "schema": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "id",
+                                    "createdAt"
+                                ]
+                            },
+                            {
+                                "type": "string",
+                                "example": "id,createdAt"
+                            }
+                        ]
+                    }
+                },
+                "whitelist": {
+                    "name": "whitelist",
+                    "in": "query",
+                    "description": "whitelist for fields changes, example: `field1,field2`",
+                    "schema": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "id",
+                                    "createdAt"
+                                ]
+                            },
+                            {
+                                "type": "string",
+                                "example": "id,createdAt"
+                            }
+                        ]
+                    }
+                },
+                "blacklist": {
+                    "name": "blacklist",
+                    "in": "query",
+                    "description": "blacklist for fields changes, example: `field1,field2`",
+                    "schema": {
+                        "oneOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "id",
+                                    "createdAt"
+                                ]
+                            },
+                            {
+                                "type": "string",
+                                "example": "id,createdAt"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "security": [
+            {
+                "api-key": []
+            }
+        ],
+        "servers": [
+            {
+                "url": "/api/"
+            }
+        ],
+        "paths": {
+            "/filmler:list": {
+                "get": {
+                    "tags": [
+                        "filmler"
+                    ],
+                    "summary": "Returns a list of the collection",
+                    "parameters": [
+                        {
+                            "name": "page",
+                            "in": "query",
+                            "description": "page number",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "name": "pageSize",
+                            "in": "query",
+                            "description": "page size",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/components/schemas/filmler"
+                                                }
+                                            },
+                                            "meta": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "description": "total count"
+                                                    },
+                                                    "page": {
+                                                        "type": "integer",
+                                                        "description": "current page"
+                                                    },
+                                                    "pageSize": {
+                                                        "type": "integer",
+                                                        "description": "items count per page"
+                                                    },
+                                                    "totalPage": {
+                                                        "type": "integer",
+                                                        "description": "total page"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler:get": {
+                "get": {
+                    "tags": [
+                        "filmler"
+                    ],
+                    "summary": "Return a record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler:create": {
+                "post": {
+                    "tags": [
+                        "filmler"
+                    ],
+                    "summary": "Create record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler:update": {
+                "post": {
+                    "tags": [
+                        "filmler"
+                    ],
+                    "summary": "Update record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler:destroy": {
+                "post": {
+                    "tags": [
+                        "filmler"
+                    ],
+                    "summary": "Delete record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:list": {
+                "get": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Return a list of One to many relationship",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "name": "page",
+                            "in": "query",
+                            "description": "page number",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "name": "pageSize",
+                            "in": "query",
+                            "description": "page size",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/components/schemas/filmler"
+                                                }
+                                            },
+                                            "meta": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "description": "total count"
+                                                    },
+                                                    "page": {
+                                                        "type": "integer",
+                                                        "description": "current page"
+                                                    },
+                                                    "pageSize": {
+                                                        "type": "integer",
+                                                        "description": "items count per page"
+                                                    },
+                                                    "totalPage": {
+                                                        "type": "integer",
+                                                        "description": "total page"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:get": {
+                "get": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Return a record of One to many",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:create": {
+                "post": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Create and associate a record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:update": {
+                "post": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Update the relationship record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:destroy": {
+                "post": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Destroy and disassociate the relationship record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:set": {
+                "post": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Set or reset associations",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTks"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:remove": {
+                "post": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Detach record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTks"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/kaynaklar_id:toggle": {
+                "post": {
+                    "tags": [
+                        "filmler.kaynaklar_id"
+                    ],
+                    "summary": "Attach or detach record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:list": {
+                "get": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Return a list of One to many relationship",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "name": "page",
+                            "in": "query",
+                            "description": "page number",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "name": "pageSize",
+                            "in": "query",
+                            "description": "page size",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/components/schemas/filmler"
+                                                }
+                                            },
+                                            "meta": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "description": "total count"
+                                                    },
+                                                    "page": {
+                                                        "type": "integer",
+                                                        "description": "current page"
+                                                    },
+                                                    "pageSize": {
+                                                        "type": "integer",
+                                                        "description": "items count per page"
+                                                    },
+                                                    "totalPage": {
+                                                        "type": "integer",
+                                                        "description": "total page"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:get": {
+                "get": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Return a record of One to many",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:create": {
+                "post": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Create and associate a record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:update": {
+                "post": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Update the relationship record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:destroy": {
+                "post": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Destroy and disassociate the relationship record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:set": {
+                "post": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Set or reset associations",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTks"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:remove": {
+                "post": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Detach record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTks"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/film_altyazilari_id:toggle": {
+                "post": {
+                    "tags": [
+                        "filmler.film_altyazilari_id"
+                    ],
+                    "summary": "Attach or detach record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:list": {
+                "get": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Return a list of Many to many relationship",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "name": "page",
+                            "in": "query",
+                            "description": "page number",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "name": "pageSize",
+                            "in": "query",
+                            "description": "page size",
+                            "required": false,
+                            "schema": {
+                                "type": "integer"
+                            }
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/components/schemas/filmler"
+                                                }
+                                            },
+                                            "meta": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "description": "total count"
+                                                    },
+                                                    "page": {
+                                                        "type": "integer",
+                                                        "description": "current page"
+                                                    },
+                                                    "pageSize": {
+                                                        "type": "integer",
+                                                        "description": "items count per page"
+                                                    },
+                                                    "totalPage": {
+                                                        "type": "integer",
+                                                        "description": "total page"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:get": {
+                "get": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Return a record of Many to many",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/sort"
+                        },
+                        {
+                            "$ref": "#/components/parameters/fields"
+                        },
+                        {
+                            "$ref": "#/components/parameters/appends"
+                        },
+                        {
+                            "$ref": "#/components/parameters/except"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:create": {
+                "post": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Create and associate a record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:update": {
+                "post": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Update the relationship record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        },
+                        {
+                            "$ref": "#/components/parameters/whitelist"
+                        },
+                        {
+                            "$ref": "#/components/parameters/blacklist"
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/filmler.form"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/components/schemas/filmler"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:destroy": {
+                "post": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Destroy and disassociate the relationship record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filter"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:set": {
+                "post": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Set or reset associations",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTks"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:remove": {
+                "post": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Detach record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTks"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            },
+            "/filmler/{collectionIndex}/turler:toggle": {
+                "post": {
+                    "tags": [
+                        "filmler.turler"
+                    ],
+                    "summary": "Attach or detach record",
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/collectionIndex"
+                        },
+                        {
+                            "$ref": "#/components/parameters/filterByTk"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK"
+                        }
+                    }
+                }
+            }
+        },
+        "tags": [
+            {
+                "name": "filmler",
+                "description": "Filmler"
+            },
+            {
+                "name": "filmler.kaynaklar_id",
+                "description": "One to many relationship, Filmler/Film Kaynakları"
+            },
+            {
+                "name": "filmler.film_altyazilari_id",
+                "description": "One to many relationship, Filmler/Film Altyazıları"
+            },
+            {
+                "name": "filmler.turler",
+                "description": "Many to many relationship, Filmler/Türler"
+            }
+        ]
+    },
+    "turler":{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "NocoBase API documentation",
+        "description": "",
+        "contact": {
+            "url": "https://github.com/nocobase/nocobase/issues"
+        },
+        "license": {
+            "name": "Core packages are Apache 2.0 & Plugins packages are AGPL 3.0 licensed.",
+            "url": "https://github.com/nocobase/nocobase#license"
+        },
+        "version": "1.8.14"
+    },
+    "externalDocs": {
+        "description": "Find out more about NocoBase",
+        "url": "https://docs.nocobase.com/api/http"
+    },
+    "components": {
+        "securitySchemes": {
+            "api-key": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "error": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "description": "错误信息",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "turler": {
+                "type": "object",
+                "properties": {
+                    "tmdb_id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "baslik": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "turler.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/turler"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            },
+            "filmler": {
+                "type": "object",
+                "properties": {
+                    "poster": {
+                        "type": "string"
+                    },
+                    "baslik": {
+                        "type": "string"
+                    },
+                    "imdb_id": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "yayin_tarihi": {
+                        "type": "string"
+                    },
+                    "orjinal_baslik": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "arka_plan": {
+                        "type": "string"
+                    },
+                    "detay": {
+                        "type": "string"
+                    },
+                    "tmdb_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filmler.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/filmler"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "parameters": {
+            "collectionIndex": {
+                "required": true,
+                "name": "collectionIndex",
+                "in": "path",
+                "description": "collection index",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTk": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TK(default by ID)",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTks": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TKs(default by ID), example: `1,2,3`",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filter": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter items",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "sort": {
+                "name": "sort",
+                "in": "query",
+                "description": "sort items by fields, example: `-field1,-field2,field3`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "-id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "-id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "fields": {
+                "name": "fields",
+                "in": "query",
+                "description": "select fields, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "except": {
+                "name": "except",
+                "in": "query",
+                "description": "except fields in results, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "appends": {
+                "name": "appends",
+                "in": "query",
+                "description": "append associations in results, example: `assoc1,assoc2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "whitelist": {
+                "name": "whitelist",
+                "in": "query",
+                "description": "whitelist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "blacklist": {
+                "name": "blacklist",
+                "in": "query",
+                "description": "blacklist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "api-key": []
+        }
+    ],
+    "servers": [
+        {
+            "url": "/api/"
+        }
+    ],
+    "paths": {
+        "/turler:list": {
+            "get": {
+                "tags": [
+                    "turler"
+                ],
+                "summary": "Returns a list of the collection",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/turler"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "total count"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "description": "current page"
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "description": "items count per page"
+                                                },
+                                                "totalPage": {
+                                                    "type": "integer",
+                                                    "description": "total page"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler:get": {
+            "get": {
+                "tags": [
+                    "turler"
+                ],
+                "summary": "Return a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/turler"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler:create": {
+            "post": {
+                "tags": [
+                    "turler"
+                ],
+                "summary": "Create record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/turler.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/turler"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler:update": {
+            "post": {
+                "tags": [
+                    "turler"
+                ],
+                "summary": "Update record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/turler.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/turler"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler:destroy": {
+            "post": {
+                "tags": [
+                    "turler"
+                ],
+                "summary": "Delete record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:list": {
+            "get": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Return a list of Many to many relationship",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/turler"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "total count"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "description": "current page"
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "description": "items count per page"
+                                                },
+                                                "totalPage": {
+                                                    "type": "integer",
+                                                    "description": "total page"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:get": {
+            "get": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Return a record of Many to many",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/turler"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:create": {
+            "post": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Create and associate a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/turler.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/turler"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:update": {
+            "post": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Update the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/turler.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/turler"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:destroy": {
+            "post": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Destroy and disassociate the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:set": {
+            "post": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Set or reset associations",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTks"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:remove": {
+            "post": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Detach record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTks"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/turler/{collectionIndex}/film_id:toggle": {
+            "post": {
+                "tags": [
+                    "turler.film_id"
+                ],
+                "summary": "Attach or detach record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "turler",
+            "description": "Türler"
+        },
+        {
+            "name": "turler.film_id",
+            "description": "Many to many relationship, Türler/Filmler"
+        }
+    ]
+}
+}

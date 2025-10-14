@@ -1,0 +1,10 @@
+- [x] sağ sol tuşları ile kartlar arası geçiş yapılabiliyor ama animasyon düzgün değil. kartı ortalamaya çalışıp tekrar en sola gidiyor.
+- [x] aşağı yukarı tuşları ile kartlar arası geçiş yapılsa da scrool değişmediği için aktif kart görüntülenemiyor.
+- [x] film resimler 2:3 oranında geliyor. genişlik 2000, yükseklik 3000. buna göre gösterimi düzenle ve resimler bu oranda gelmezse bile bu orana sığdır ki resmin tamamını görebilelim.
+- [x] film 1'de iken zindex olarak 2. filmden yukarda olması gerekiyor ama focus olunan film bir sonrakinin altında kalıyor. ve scale efekti tam olarak ortalı değil sağa doğru büyüyor
+- [x] ana sayfada film gridleri için infinty scrool kullan. ilk başta 20 film çek sonrasında sağa doğru kaydıkça diğer sayfalar da yüklenerek devam etsin.
+- [x] ana sayfadaki film kartı focus olduğunda biraz daha scale olmalı ve glow efekti daha belirgin olmalı. ancak sanırım scooldan dolayı bu efectler uygulandığında üst ve alt borderlar görüntülenmiyor
+- [x] en üstteki hero banner'da da butonlar var bunlara da tuşlarla erişilebilmeli
+- [x] focus efektinde gölgeler çok fazla daha da azaltılabilir
+- [x] 2. karta focus iken 3. kart üstte kalıyor. normalde 1 ve 3 daha altta olmalı
+- [x] 1. satırdayken yukarı ok tuşuna basınca hero bannera geçse de scrool yukarı çıkmıyor. hero banner görünmüyor.
