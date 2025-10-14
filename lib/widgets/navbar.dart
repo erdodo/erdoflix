@@ -112,7 +112,9 @@ class _NavBarState extends State<NavBar> {
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          color: isSelected ? Colors.red.withValues(alpha: 0.3) : Colors.transparent,
+          color: isSelected
+              ? Colors.red.withValues(alpha: 0.3)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? Colors.red : Colors.transparent,
@@ -139,7 +141,9 @@ class _NavBarState extends State<NavBar> {
           children: [
             Icon(
               item.icon,
-              color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
+              color: isSelected
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.6),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -147,7 +151,9 @@ class _NavBarState extends State<NavBar> {
               item.label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
+                color: isSelected
+                    ? Colors.white
+                    : Colors.white.withValues(alpha: 0.6),
                 fontSize: 9,
                 fontWeight: FontWeight.normal,
               ),

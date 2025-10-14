@@ -71,10 +71,20 @@ class TurService {
     int pageSize = 20,
   }) async {
     try {
-      // Türe ait filmleri çekmek için turler/{turId}/film_id:list endpoint'i kullan
+      // Filter parametresi: {"$and":[{"turler":{"id":{"$eq":turId}}}]}
+      final filter = jsonEncode({
+        "\$and": [
+          {
+            "turler": {
+              "id": {"\$eq": turId}
+            }
+          }
+        ]
+      });
+
       final response = await http.get(
         Uri.parse(
-          '$baseUrl/turler/$turId/film_id:list?page=$page&pageSize=$pageSize&appends=turler',
+          '$baseUrl/filmler:list?pageSize=$pageSize&page=$page&filter=$filter&appends[]=turler&appends[]=kaynaklar_id&appends[]=film_altyazilari_id',
         ),
         headers: _getHeaders(),
       );
@@ -84,6 +94,8 @@ class TurService {
         final List<dynamic> data = jsonData['data'] ?? [];
         return data.map((item) => Film.fromJson(item)).toList();
       } else {
+        print('Failed to load films by tur: ${response.statusCode}');
+        print('Response body: ${response.body}');
         throw Exception('Failed to load films by tur: ${response.statusCode}');
       }
     } catch (e) {
