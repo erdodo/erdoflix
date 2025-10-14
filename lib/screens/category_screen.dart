@@ -158,111 +158,113 @@ class _CategoryScreenState extends State<CategoryScreen> {
           top: true,
           bottom: false,
           child: Row(
-          children: [
-            // Desktop navbar (solda)
-            if (!isMobile)
-              NavBar(
-                focusedIndex: _navbarFocusedIndex,
-                onFocusChanged: (index) {
-                  setState(() {
-                    _navbarFocusedIndex = index;
-                    _isNavbarFocused = true;
-                  });
-                },
-                isFocused: _isNavbarFocused,
-              ),
-            // Ana içerik
-            Expanded(
-              child: Column(
-                children: [
-                  // Üst başlık
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                          onPressed: () => context.go('/'),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          widget.tur.baslik,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Film grid
-                  Expanded(
-                    child: _isLoading && _films.isEmpty
-                        ? const Center(
-                            child: CircularProgressIndicator(color: Colors.red),
-                          )
-                        : _films.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'Bu kategoride film bulunamadı',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
+            children: [
+              // Desktop navbar (solda)
+              if (!isMobile)
+                NavBar(
+                  focusedIndex: _navbarFocusedIndex,
+                  onFocusChanged: (index) {
+                    setState(() {
+                      _navbarFocusedIndex = index;
+                      _isNavbarFocused = true;
+                    });
+                  },
+                  isFocused: _isNavbarFocused,
+                ),
+              // Ana içerik
+              Expanded(
+                child: Column(
+                  children: [
+                    // Üst başlık
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
                             ),
-                          )
-                        : SingleChildScrollView(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Grid layout
-                                LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    return Wrap(
-                                      spacing: 12,
-                                      runSpacing: 12,
-                                      children: List.generate(_films.length, (
-                                        index,
-                                      ) {
-                                        final isFocused =
-                                            _focusedIndex == index;
-                                        return SizedBox(
-                                          width: 200,
-                                          child: FilmCard(
-                                            film: _films[index],
-                                            isFocused: isFocused,
-                                            onTap: () =>
-                                                _onFilmTap(_films[index]),
-                                          ),
-                                        );
-                                      }),
-                                    );
-                                  },
+                            onPressed: () => context.go('/'),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            widget.tur.baslik,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Film grid
+                    Expanded(
+                      child: _isLoading && _films.isEmpty
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.red,
+                              ),
+                            )
+                          : _films.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Bu kategoride film bulunamadı',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
                                 ),
-                                // Loading indicator for more items
-                                if (_isLoading && _films.isNotEmpty)
-                                  const Padding(
-                                    padding: EdgeInsets.all(20),
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.red,
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Grid layout
+                                  LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return Wrap(
+                                        spacing: 12,
+                                        runSpacing: 12,
+                                        children: List.generate(_films.length, (
+                                          index,
+                                        ) {
+                                          final isFocused =
+                                              _focusedIndex == index;
+                                          return SizedBox(
+                                            width: 200,
+                                            child: FilmCard(
+                                              film: _films[index],
+                                              isFocused: isFocused,
+                                              onTap: () =>
+                                                  _onFilmTap(_films[index]),
+                                            ),
+                                          );
+                                        }),
+                                      );
+                                    },
+                                  ),
+                                  // Loading indicator for more items
+                                  if (_isLoading && _films.isNotEmpty)
+                                    const Padding(
+                                      padding: EdgeInsets.all(20),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.red,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
         // Mobil navbar (altta)
         bottomNavigationBar: isMobile

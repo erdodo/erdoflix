@@ -239,22 +239,22 @@ lib/
 dependencies:
   flutter:
     sdk: flutter
-  
+
   # Routing
   go_router: ^14.8.1
-  
+
   # State Management
   provider: ^6.1.1
   flutter_hooks: ^0.20.5
-  
+
   # API & Network
   http: ^1.2.0
-  
+
   # UI & Media
   cached_network_image: ^3.3.1
   video_player: ^2.9.2
   chewie: ^1.8.5
-  
+
   # Utilities
   focus_detector: ^2.0.1
   flutter_launcher_icons: ^0.14.1

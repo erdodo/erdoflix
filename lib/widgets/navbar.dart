@@ -129,10 +129,7 @@ class _NavBarState extends State<NavBar> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 60,
-        constraints: const BoxConstraints(
-          minHeight: 48,
-          maxHeight: 60,
-        ),
+        constraints: const BoxConstraints(minHeight: 48, maxHeight: 60),
         decoration: BoxDecoration(
           color: isSelected
               ? Colors.red.withValues(alpha: 0.3)

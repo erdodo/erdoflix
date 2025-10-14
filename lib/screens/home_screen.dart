@@ -391,76 +391,81 @@ class _HomeScreenState extends State<HomeScreen> {
           top: true,
           bottom: false,
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: Colors.red))
+              ? const Center(
+                  child: CircularProgressIndicator(color: Colors.red),
+                )
               : Row(
-                children: [
-                  // Desktop navbar (solda)
-                  if (!isMobile)
-                    NavBar(
-                      focusedIndex: _navbarFocusedIndex,
-                      onFocusChanged: (index) {
-                        setState(() {
-                          _navbarFocusedIndex = index;
-                          _isNavbarFocused = true;
-                        });
-                      },
-                      isFocused: _isNavbarFocused,
-                    ),
-                  // Ana içerik
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: _mainScrollController,
-                      child: Column(
-                        children: [
-                          // Hero Banner
-                          _buildHeroBanner(),
-                          const SizedBox(height: 30),
-                          // Kategoriler
-                          if (_turler.isNotEmpty) _buildCategoryRow(),
-                          const SizedBox(height: 30),
-                          // Film satırları
-                          FilmRow(
-                            key: _rowKeys[0],
-                            title: 'Popüler Filmler',
-                            films: _getFilmsForRow(0),
-                            onFilmTap: _onFilmTap,
-                            isFocused: _focusedRow == 0 && !_isNavbarFocused,
-                            focusedIndex: _focusedRow == 0 && !_isNavbarFocused
-                                ? _focusedColumn
-                                : -1,
-                            onLoadMore: _loadMorePopular,
-                          ),
-                          const SizedBox(height: 20),
-                          FilmRow(
-                            key: _rowKeys[1],
-                            title: 'Yeni Çıkanlar',
-                            films: _getFilmsForRow(1),
-                            onFilmTap: _onFilmTap,
-                            isFocused: _focusedRow == 1 && !_isNavbarFocused,
-                            focusedIndex: _focusedRow == 1 && !_isNavbarFocused
-                                ? _focusedColumn
-                                : -1,
-                            onLoadMore: _loadMoreNew,
-                          ),
-                          const SizedBox(height: 20),
-                          FilmRow(
-                            key: _rowKeys[2],
-                            title: 'Önerilen Filmler',
-                            films: _getFilmsForRow(2),
-                            onFilmTap: _onFilmTap,
-                            isFocused: _focusedRow == 2 && !_isNavbarFocused,
-                            focusedIndex: _focusedRow == 2 && !_isNavbarFocused
-                                ? _focusedColumn
-                                : -1,
-                            onLoadMore: _loadMoreRecommended,
-                          ),
-                          SizedBox(height: isMobile ? 90 : 40),
-                        ],
+                  children: [
+                    // Desktop navbar (solda)
+                    if (!isMobile)
+                      NavBar(
+                        focusedIndex: _navbarFocusedIndex,
+                        onFocusChanged: (index) {
+                          setState(() {
+                            _navbarFocusedIndex = index;
+                            _isNavbarFocused = true;
+                          });
+                        },
+                        isFocused: _isNavbarFocused,
+                      ),
+                    // Ana içerik
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: _mainScrollController,
+                        child: Column(
+                          children: [
+                            // Hero Banner
+                            _buildHeroBanner(),
+                            const SizedBox(height: 30),
+                            // Kategoriler
+                            if (_turler.isNotEmpty) _buildCategoryRow(),
+                            const SizedBox(height: 30),
+                            // Film satırları
+                            FilmRow(
+                              key: _rowKeys[0],
+                              title: 'Popüler Filmler',
+                              films: _getFilmsForRow(0),
+                              onFilmTap: _onFilmTap,
+                              isFocused: _focusedRow == 0 && !_isNavbarFocused,
+                              focusedIndex:
+                                  _focusedRow == 0 && !_isNavbarFocused
+                                  ? _focusedColumn
+                                  : -1,
+                              onLoadMore: _loadMorePopular,
+                            ),
+                            const SizedBox(height: 20),
+                            FilmRow(
+                              key: _rowKeys[1],
+                              title: 'Yeni Çıkanlar',
+                              films: _getFilmsForRow(1),
+                              onFilmTap: _onFilmTap,
+                              isFocused: _focusedRow == 1 && !_isNavbarFocused,
+                              focusedIndex:
+                                  _focusedRow == 1 && !_isNavbarFocused
+                                  ? _focusedColumn
+                                  : -1,
+                              onLoadMore: _loadMoreNew,
+                            ),
+                            const SizedBox(height: 20),
+                            FilmRow(
+                              key: _rowKeys[2],
+                              title: 'Önerilen Filmler',
+                              films: _getFilmsForRow(2),
+                              onFilmTap: _onFilmTap,
+                              isFocused: _focusedRow == 2 && !_isNavbarFocused,
+                              focusedIndex:
+                                  _focusedRow == 2 && !_isNavbarFocused
+                                  ? _focusedColumn
+                                  : -1,
+                              onLoadMore: _loadMoreRecommended,
+                            ),
+                            SizedBox(height: isMobile ? 90 : 40),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
         ),
         // Mobil navbar (altta)
         bottomNavigationBar: isMobile

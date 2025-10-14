@@ -19,24 +19,24 @@ import 'services/film_cache_service.dart';
 void main() {
   // Sistem UI yapılandırması (status bar, navigation bar)
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Edge-to-edge mod: Içerik ekranın tamamını kullanır
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.edgeToEdge,
-  );
-  
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
   // Status bar ve navigation bar renklerini ayarla
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Transparan status bar
-      statusBarIconBrightness: Brightness.light, // Beyaz ikonlar (karanlık tema)
+      statusBarIconBrightness:
+          Brightness.light, // Beyaz ikonlar (karanlık tema)
       statusBarBrightness: Brightness.dark, // iOS için
       systemNavigationBarColor: Colors.transparent, // Transparan navigation bar
       systemNavigationBarIconBrightness: Brightness.light, // Beyaz ikonlar
-      systemNavigationBarContrastEnforced: false, // Android 10+ için kontrast zorlamasını kapat
+      systemNavigationBarContrastEnforced:
+          false, // Android 10+ için kontrast zorlamasını kapat
     ),
   );
-  
+
   // Web için HLS plugin'ini register et
   // if (kIsWeb) {
   //   VideoPlayerPlatform.instance = VideoPlayerPluginHls();

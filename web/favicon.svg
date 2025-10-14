@@ -1,7 +1,7 @@
 <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
   <!-- Background -->
   <rect width="32" height="32" fill="#000000" rx="4"/>
-  
+
   <!-- Gradient Definition -->
   <defs>
     <linearGradient id="redGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -9,18 +9,18 @@
       <stop offset="100%" style="stop-color:#B20710;stop-opacity:1" />
     </linearGradient>
   </defs>
-  
+
   <!-- Simplified E Letter for small size -->
   <g>
     <!-- Left vertical bar -->
     <rect x="8" y="7" width="5" height="18" fill="url(#redGrad)"/>
-    
+
     <!-- Top horizontal bar -->
     <rect x="8" y="7" width="16" height="4" fill="url(#redGrad)"/>
-    
+
     <!-- Middle horizontal bar -->
     <rect x="8" y="14" width="14" height="4" fill="url(#redGrad)"/>
-    
+
     <!-- Bottom horizontal bar -->
     <rect x="8" y="21" width="16" height="4" fill="url(#redGrad)"/>
   </g>
