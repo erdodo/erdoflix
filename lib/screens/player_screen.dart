@@ -46,17 +46,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   // Altyazı seçimi
   int _selectedAltyaziIndex = -1; // -1: Altyazı yok
-  
+
   // Player'a girerken mevcut orientation'ı sakla
   List<DeviceOrientation>? _previousOrientations;
+  bool _orientationSaved = false;
 
   @override
   void initState() {
     super.initState();
-    
-    // Mevcut orientation'ı kaydet
-    _savePreviousOrientation();
-    
+
     // Landscape (yatay) moda geç
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
@@ -64,19 +62,30 @@ class _PlayerScreenState extends State<PlayerScreen> {
     ]);
     // Tam ekran moda geç (system UI'ları gizle)
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    
+
     _initializePlayer();
     _resetHideTimer(); // Kontrolleri 3 saniye sonra gizle
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // İlk kez çağrıldığında orientation'ı kaydet
+    if (!_orientationSaved) {
+      _savePreviousOrientation();
+      _orientationSaved = true;
+    }
   }
 
   // Mevcut orientation'ı kaydet
   void _savePreviousOrientation() {
     // MediaQuery'den mevcut ekran boyutunu al
     final size = MediaQuery.of(context).size;
-    
+
     // Eğer width > height ise landscape (yatay), değilse portrait (dikey)
     final isLandscape = size.width > size.height;
-    
+
     if (isLandscape) {
       // Yatay moddan geliyorsa, yatay modda kal
       _previousOrientations = [
@@ -90,8 +99,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
         DeviceOrientation.portraitDown,
       ];
     }
-    
-    debugPrint('🔄 Previous orientation saved: ${isLandscape ? "Landscape" : "Portrait"}');
+
+    debugPrint(
+      '🔄 Previous orientation saved: ${isLandscape ? "Landscape" : "Portrait"}',
+    );
   }
 
   // Video formatını tespit et
@@ -685,7 +696,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _videoPlayerController?.removeListener(_progressListener);
     _chewieController?.dispose();
     _videoPlayerController?.dispose();
-    
+
     // Kaydedilen orientation'a geri dön (yoksa tüm orientasyonları aç)
     if (_previousOrientations != null) {
       SystemChrome.setPreferredOrientations(_previousOrientations!);
@@ -699,10 +710,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
         DeviceOrientation.landscapeRight,
       ]);
     }
-    
+
     // System UI'ları geri getir
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    
+
     super.dispose();
   }
 
