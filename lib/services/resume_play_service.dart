@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/resume_play.dart';
 
@@ -20,18 +21,25 @@ class ResumePlayService {
   }
 
   // Film için son izleme pozisyonunu getir
-  static Future<ResumePlay?> getResumePosition(int filmId,
-      {int userId = 1}) async {
+  static Future<ResumePlay?> getResumePosition(
+    int filmId, {
+    int userId = 1,
+  }) async {
     try {
       final filter = jsonEncode({
         "\$and": [
-          {"film_id": {"\$eq": filmId}},
-          {"user_id": {"\$eq": userId}}
-        ]
+          {
+            "film_ids": {
+              "id": {"\$eq": filmId},
+            },
+          },
+        ],
       });
 
       final response = await http.get(
-        Uri.parse('$baseUrl/resume_play:list?filter=$filter&pageSize=1'),
+        Uri.parse(
+          '$baseUrl/resume_play:list?pageSize=20&appends[]=film_ids&page=1&filter=$filter',
+        ),
         headers: _getHeaders(),
       );
 
@@ -42,10 +50,14 @@ class ResumePlayService {
             data['data'].isNotEmpty) {
           return ResumePlay.fromJson(data['data'][0]);
         }
+      } else {
+        debugPrint('⏱️ Resume play API error: ${response.statusCode}');
       }
+      // Kayıt yoksa null döndür (player 0'dan başlayacak)
       return null;
     } catch (e) {
-      print('Resume position getirme hatası: $e');
+      debugPrint('⏱️ Resume position hatası (0\'dan başlanacak): $e');
+      // Hata durumunda null döndür, player 0'dan başlasın
       return null;
     }
   }
@@ -54,8 +66,10 @@ class ResumePlayService {
   static Future<bool> saveResumePosition(ResumePlay resumePlay) async {
     try {
       // Önce mevcut kaydı kontrol et
-      final existing =
-          await getResumePosition(resumePlay.filmId, userId: resumePlay.userId);
+      final existing = await getResumePosition(
+        resumePlay.filmId,
+        userId: resumePlay.userId,
+      );
 
       if (existing != null) {
         // Güncelle
@@ -81,8 +95,7 @@ class ResumePlayService {
   }
 
   // İzleme pozisyonunu sil (tamamlandığında veya sıfırlamak için)
-  static Future<bool> deleteResumePosition(int filmId,
-      {int userId = 1}) async {
+  static Future<bool> deleteResumePosition(int filmId, {int userId = 1}) async {
     try {
       final existing = await getResumePosition(filmId, userId: userId);
       if (existing != null) {

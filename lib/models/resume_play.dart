@@ -20,13 +20,29 @@ class ResumePlay {
   });
 
   factory ResumePlay.fromJson(Map<String, dynamic> json) {
+    // Güvenli integer parsing
+    int parseIntSafe(dynamic value, int defaultValue) {
+      if (value == null) return defaultValue;
+      if (value is int) return value;
+      if (value is double) return value.toInt();
+      if (value is String) return int.tryParse(value) ?? defaultValue;
+      return defaultValue;
+    }
+
+    // Güvenli string parsing
+    String? parseStringSafe(dynamic value) {
+      if (value == null) return null;
+      if (value is String) return value;
+      return value.toString();
+    }
+
     return ResumePlay(
-      id: json['id'],
-      filmId: json['film_id'] ?? 0,
-      userId: json['user_id'] ?? 1, // Şimdilik default user
-      position: json['position'] ?? 0,
-      duration: json['duration'],
-      durum: json['durum'],
+      id: parseIntSafe(json['id'], 0),
+      filmId: parseIntSafe(json['film_id'], 0),
+      userId: parseIntSafe(json['user_id'], 1),
+      position: parseIntSafe(json['position'], 0),
+      duration: parseIntSafe(json['duration'], 0),
+      durum: parseStringSafe(json['durum']),
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,

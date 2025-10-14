@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../models/film.dart';
 import '../services/api_service.dart';
+import '../services/film_cache_service.dart';
 import '../widgets/navbar.dart';
 
 class FilmDetailScreen extends StatefulWidget {
@@ -36,11 +37,16 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
       _isLoading = true;
     });
 
-    // Film detaylarını çek (turler ile birlikte)
-    final detailedFilm = await _apiService.getFilm(widget.film.id);
+    // widget.film zaten kaynaklar ve altyazılarla geliyor (main.dart'tan)
+    // Sadece benzer filmleri yükle
+    debugPrint('🎬 Detail Page: Film bilgileri:');
+    debugPrint('🎬 Detail Page: Film: ${widget.film.baslik}');
+    debugPrint('🎬 Detail Page: hasVideo: ${widget.film.hasVideo}');
+    debugPrint('🎬 Detail Page: kaynaklar: ${widget.film.kaynaklar?.length}');
+    debugPrint('🎬 Detail Page: turler: ${widget.film.turler.length}');
 
     // Benzer filmleri çek (aynı türdeki filmler)
-    if (detailedFilm != null && detailedFilm.turler.isNotEmpty) {
+    if (widget.film.turler.isNotEmpty) {
       // İlk türe göre benzer filmler
       // Not: API'de benzer filmler endpoint'i yoksa, aynı türdeki filmleri getiriyor
       final allFilms = await _apiService.getFilmler(page: 1, pageSize: 10);
@@ -51,7 +57,8 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
     }
 
     setState(() {
-      _detailedFilm = detailedFilm;
+      // widget.film'i kullan (zaten detaylı)
+      _detailedFilm = widget.film;
       _isLoading = false;
     });
   }
@@ -138,8 +145,17 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
       case 0:
         // İzle butonu - Player'a git
         final film = _detailedFilm ?? widget.film;
+        debugPrint('🎬 Film Detail -> Player');
+        debugPrint('🎬 Film: ${film.baslik}');
+        debugPrint('🎬 hasVideo: ${film.hasVideo}');
+        debugPrint('🎬 kaynaklar: ${film.kaynaklar?.length}');
+
         if (film.hasVideo) {
-          context.go('/player/${film.id}');
+          // Film'i cache'e kaydet
+          FilmCacheService().setFilm(film);
+          debugPrint('🎬 Film cache\'e kaydedildi: ${film.id}');
+
+          context.go('/player/${film.id}', extra: film);
         } else {
           _showComingSoon('Bu film için video kaynağı bulunamadı');
         }
@@ -178,9 +194,12 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
       onKey: (event) => _handleKeyEvent(event),
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.red))
-            : Row(
+        body: SafeArea(
+          top: true,
+          bottom: false,
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: Colors.red))
+              : Row(
                 children: [
                   // Desktop navbar (solda)
                   if (!isMobile)
@@ -576,6 +595,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                   ),
                 ],
               ),
+        ),
         // Mobil navbar (altta)
         bottomNavigationBar: isMobile
             ? NavBar(

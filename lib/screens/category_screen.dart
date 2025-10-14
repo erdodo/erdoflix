@@ -154,7 +154,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
       onKey: (event) => _handleKeyEvent(event),
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Row(
+        body: SafeArea(
+          top: true,
+          bottom: false,
+          child: Row(
           children: [
             // Desktop navbar (solda)
             if (!isMobile)
@@ -259,6 +262,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ),
             ),
           ],
+        ),
         ),
         // Mobil navbar (altta)
         bottomNavigationBar: isMobile

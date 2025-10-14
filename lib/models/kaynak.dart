@@ -21,12 +21,7 @@ class Kaynak {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'baslik': baslik,
-      'url': url,
-      'kaynak_id': kaynakId,
-    };
+    return {'id': id, 'baslik': baslik, 'url': url, 'kaynak_id': kaynakId};
   }
 
   // Kalite sıralama için

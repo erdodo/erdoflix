@@ -1,0 +1,48 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#000000" rx="20"/>
+  
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E50914;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B20710;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="4" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Main E Letter (Netflix style with 3D effect) -->
+  <g filter="url(#shadow)">
+    <!-- Left vertical bar -->
+    <rect x="50" y="40" width="30" height="120" fill="url(#redGradient)"/>
+    
+    <!-- Top horizontal bar -->
+    <rect x="50" y="40" width="100" height="25" fill="url(#redGradient)"/>
+    
+    <!-- Middle horizontal bar -->
+    <rect x="50" y="87.5" width="90" height="25" fill="url(#redGradient)"/>
+    
+    <!-- Bottom horizontal bar -->
+    <rect x="50" y="135" width="100" height="25" fill="url(#redGradient)"/>
+    
+    <!-- 3D depth effect - darker bars on the right side -->
+    <rect x="145" y="42" width="8" height="23" fill="#8B0000" opacity="0.6"/>
+    <rect x="135" y="89.5" width="8" height="23" fill="#8B0000" opacity="0.6"/>
+    <rect x="145" y="137" width="8" height="23" fill="#8B0000" opacity="0.6"/>
+  </g>
+  
+  <!-- Highlight/shine effect -->
+  <rect x="55" y="45" width="8" height="50" fill="white" opacity="0.15"/>
+</svg>

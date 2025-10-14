@@ -105,4 +105,3 @@ class Film {
     return kaynaklar != null && kaynaklar!.isNotEmpty;
   }
 }
-

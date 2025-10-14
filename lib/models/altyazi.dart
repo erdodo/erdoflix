@@ -21,11 +21,6 @@ class Altyazi {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'baslik': baslik,
-      'url': url,
-      'film_id': filmId,
-    };
+    return {'id': id, 'baslik': baslik, 'url': url, 'film_id': filmId};
   }
 }

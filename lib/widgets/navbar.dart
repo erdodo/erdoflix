@@ -40,7 +40,6 @@ class _NavBarState extends State<NavBar> {
 
   Widget _buildMobileNavBar() {
     return Container(
-      height: 70,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.95),
         boxShadow: [
@@ -51,15 +50,25 @@ class _NavBarState extends State<NavBar> {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(_navItems.length, (index) {
-          return _buildNavButton(
-            item: _navItems[index],
-            index: index,
-            isMobile: true,
-          );
-        }),
+      child: SafeArea(
+        // Mobile navbar için sadece bottom SafeArea (navigation bar için)
+        top: false,
+        bottom: true,
+        left: true,
+        right: true,
+        child: Container(
+          height: 70,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(_navItems.length, (index) {
+              return _buildNavButton(
+                item: _navItems[index],
+                index: index,
+                isMobile: true,
+              );
+            }),
+          ),
+        ),
       ),
     );
   }
@@ -77,18 +86,28 @@ class _NavBarState extends State<NavBar> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(_navItems.length, (index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: _buildNavButton(
-              item: _navItems[index],
-              index: index,
-              isMobile: false,
-            ),
-          );
-        }),
+      child: SafeArea(
+        // Desktop navbar için sadece top ve bottom SafeArea
+        top: true,
+        bottom: true,
+        left: false,
+        right: false,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: List.generate(_navItems.length, (index) {
+            return Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: _buildNavButton(
+                  item: _navItems[index],
+                  index: index,
+                  isMobile: false,
+                ),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -110,7 +129,10 @@ class _NavBarState extends State<NavBar> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 60,
-        height: 60,
+        constraints: const BoxConstraints(
+          minHeight: 48,
+          maxHeight: 60,
+        ),
         decoration: BoxDecoration(
           color: isSelected
               ? Colors.red.withValues(alpha: 0.3)

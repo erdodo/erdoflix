@@ -385,9 +385,14 @@ class _HomeScreenState extends State<HomeScreen> {
       onKey: _handleKeyEvent,
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.red))
-            : Row(
+        body: SafeArea(
+          // En üstteki içeriği status bar'dan korur
+          // Alt navigation bar için SafeArea kullanmayacağız, kendi padding'i var
+          top: true,
+          bottom: false,
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: Colors.red))
+              : Row(
                 children: [
                   // Desktop navbar (solda)
                   if (!isMobile)
@@ -456,6 +461,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+        ),
         // Mobil navbar (altta)
         bottomNavigationBar: isMobile
             ? NavBar(

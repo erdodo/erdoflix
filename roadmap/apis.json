@@ -11269,5 +11269,2028 @@
             "description": "Many to many relationship, İzleme Geçmişi/Film"
         }
     ]
+},
+"film_kaynaklari":{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "NocoBase API documentation",
+        "description": "",
+        "contact": {
+            "url": "https://github.com/nocobase/nocobase/issues"
+        },
+        "license": {
+            "name": "Core packages are Apache 2.0 & Plugins packages are AGPL 3.0 licensed.",
+            "url": "https://github.com/nocobase/nocobase#license"
+        },
+        "version": "1.8.14"
+    },
+    "externalDocs": {
+        "description": "Find out more about NocoBase",
+        "url": "https://docs.nocobase.com/api/http"
+    },
+    "components": {
+        "securitySchemes": {
+            "api-key": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "error": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "description": "错误信息",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "film_kaynaklari": {
+                "type": "object",
+                "properties": {
+                    "kaynak_id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "baslik": {
+                        "type": "string"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "film_kaynaklari.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/film_kaynaklari"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            },
+            "filmler": {
+                "type": "object",
+                "properties": {
+                    "poster": {
+                        "type": "string"
+                    },
+                    "baslik": {
+                        "type": "string"
+                    },
+                    "imdb_id": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "yayin_tarihi": {
+                        "type": "string"
+                    },
+                    "orjinal_baslik": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "arka_plan": {
+                        "type": "string"
+                    },
+                    "detay": {
+                        "type": "string"
+                    },
+                    "tmdb_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filmler.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/filmler"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "parameters": {
+            "collectionIndex": {
+                "required": true,
+                "name": "collectionIndex",
+                "in": "path",
+                "description": "collection index",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTk": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TK(default by ID)",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTks": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TKs(default by ID), example: `1,2,3`",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filter": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter items",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "sort": {
+                "name": "sort",
+                "in": "query",
+                "description": "sort items by fields, example: `-field1,-field2,field3`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "-id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "-id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "fields": {
+                "name": "fields",
+                "in": "query",
+                "description": "select fields, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "except": {
+                "name": "except",
+                "in": "query",
+                "description": "except fields in results, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "appends": {
+                "name": "appends",
+                "in": "query",
+                "description": "append associations in results, example: `assoc1,assoc2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "whitelist": {
+                "name": "whitelist",
+                "in": "query",
+                "description": "whitelist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "blacklist": {
+                "name": "blacklist",
+                "in": "query",
+                "description": "blacklist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "api-key": []
+        }
+    ],
+    "servers": [
+        {
+            "url": "/api/"
+        }
+    ],
+    "paths": {
+        "/film_kaynaklari:list": {
+            "get": {
+                "tags": [
+                    "film_kaynaklari"
+                ],
+                "summary": "Returns a list of the collection",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/film_kaynaklari"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "total count"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "description": "current page"
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "description": "items count per page"
+                                                },
+                                                "totalPage": {
+                                                    "type": "integer",
+                                                    "description": "total page"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari:get": {
+            "get": {
+                "tags": [
+                    "film_kaynaklari"
+                ],
+                "summary": "Return a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_kaynaklari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari:create": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari"
+                ],
+                "summary": "Create record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_kaynaklari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_kaynaklari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari:update": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari"
+                ],
+                "summary": "Update record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_kaynaklari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_kaynaklari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari:destroy": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari"
+                ],
+                "summary": "Delete record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari/{collectionIndex}/film_id:get": {
+            "get": {
+                "tags": [
+                    "film_kaynaklari.film_id"
+                ],
+                "summary": "Return a record of Many to one",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_kaynaklari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari/{collectionIndex}/film_id:set": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari.film_id"
+                ],
+                "summary": "Associate a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "name": "tk",
+                        "in": "query",
+                        "description": "targetKey",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari/{collectionIndex}/film_id:remove": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari.film_id"
+                ],
+                "summary": "Disassociate the relationship record",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    }
+                ]
+            }
+        },
+        "/film_kaynaklari/{collectionIndex}/film_id:update": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari.film_id"
+                ],
+                "summary": "Update the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_kaynaklari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_kaynaklari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari/{collectionIndex}/film_id:create": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari.film_id"
+                ],
+                "summary": "Create and associate a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_kaynaklari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_kaynaklari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_kaynaklari/{collectionIndex}/film_id:destroy": {
+            "post": {
+                "tags": [
+                    "film_kaynaklari.film_id"
+                ],
+                "summary": "Destroy and disassociate the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "film_kaynaklari",
+            "description": "Film Kaynakları"
+        },
+        {
+            "name": "film_kaynaklari.film_id",
+            "description": "Many to one relationship, Film Kaynakları/Film"
+        }
+    ]
+},
+"film_altyaziları":{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "NocoBase API documentation",
+        "description": "",
+        "contact": {
+            "url": "https://github.com/nocobase/nocobase/issues"
+        },
+        "license": {
+            "name": "Core packages are Apache 2.0 & Plugins packages are AGPL 3.0 licensed.",
+            "url": "https://github.com/nocobase/nocobase#license"
+        },
+        "version": "1.8.14"
+    },
+    "externalDocs": {
+        "description": "Find out more about NocoBase",
+        "url": "https://docs.nocobase.com/api/http"
+    },
+    "components": {
+        "securitySchemes": {
+            "api-key": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "error": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "description": "错误信息",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "film_altyazilari": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    },
+                    "baslik": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "film_id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "film_altyazilari.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/film_altyazilari"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            },
+            "filmler": {
+                "type": "object",
+                "properties": {
+                    "poster": {
+                        "type": "string"
+                    },
+                    "baslik": {
+                        "type": "string"
+                    },
+                    "imdb_id": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "yayin_tarihi": {
+                        "type": "string"
+                    },
+                    "orjinal_baslik": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "arka_plan": {
+                        "type": "string"
+                    },
+                    "detay": {
+                        "type": "string"
+                    },
+                    "tmdb_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filmler.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/filmler"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            },
+            "attachments": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "filename": {
+                        "type": "string"
+                    },
+                    "extname": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "string"
+                    },
+                    "mimetype": {
+                        "type": "string"
+                    },
+                    "path": {
+                        "type": "string"
+                    },
+                    "meta": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "attachments.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/attachments"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "createdById": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "parameters": {
+            "collectionIndex": {
+                "required": true,
+                "name": "collectionIndex",
+                "in": "path",
+                "description": "collection index",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTk": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TK(default by ID)",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTks": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TKs(default by ID), example: `1,2,3`",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filter": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter items",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "sort": {
+                "name": "sort",
+                "in": "query",
+                "description": "sort items by fields, example: `-field1,-field2,field3`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "-id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "-id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "fields": {
+                "name": "fields",
+                "in": "query",
+                "description": "select fields, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "except": {
+                "name": "except",
+                "in": "query",
+                "description": "except fields in results, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "appends": {
+                "name": "appends",
+                "in": "query",
+                "description": "append associations in results, example: `assoc1,assoc2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "whitelist": {
+                "name": "whitelist",
+                "in": "query",
+                "description": "whitelist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "blacklist": {
+                "name": "blacklist",
+                "in": "query",
+                "description": "blacklist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "api-key": []
+        }
+    ],
+    "servers": [
+        {
+            "url": "/api/"
+        }
+    ],
+    "paths": {
+        "/film_altyazilari:list": {
+            "get": {
+                "tags": [
+                    "film_altyazilari"
+                ],
+                "summary": "Returns a list of the collection",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/film_altyazilari"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "total count"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "description": "current page"
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "description": "items count per page"
+                                                },
+                                                "totalPage": {
+                                                    "type": "integer",
+                                                    "description": "total page"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari:get": {
+            "get": {
+                "tags": [
+                    "film_altyazilari"
+                ],
+                "summary": "Return a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari:create": {
+            "post": {
+                "tags": [
+                    "film_altyazilari"
+                ],
+                "summary": "Create record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_altyazilari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari:update": {
+            "post": {
+                "tags": [
+                    "film_altyazilari"
+                ],
+                "summary": "Update record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_altyazilari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari:destroy": {
+            "post": {
+                "tags": [
+                    "film_altyazilari"
+                ],
+                "summary": "Delete record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/filmler:get": {
+            "get": {
+                "tags": [
+                    "film_altyazilari.filmler"
+                ],
+                "summary": "Return a record of Many to one",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/filmler:set": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.filmler"
+                ],
+                "summary": "Associate a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "name": "tk",
+                        "in": "query",
+                        "description": "targetKey",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/filmler:remove": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.filmler"
+                ],
+                "summary": "Disassociate the relationship record",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    }
+                ]
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/filmler:update": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.filmler"
+                ],
+                "summary": "Update the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_altyazilari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/filmler:create": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.filmler"
+                ],
+                "summary": "Create and associate a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_altyazilari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/filmler:destroy": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.filmler"
+                ],
+                "summary": "Destroy and disassociate the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:list": {
+            "get": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Return a list of Many to many relationship",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/film_altyazilari"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "total count"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "description": "current page"
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "description": "items count per page"
+                                                },
+                                                "totalPage": {
+                                                    "type": "integer",
+                                                    "description": "total page"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:get": {
+            "get": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Return a record of Many to many",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:create": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Create and associate a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_altyazilari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:update": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Update the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/film_altyazilari.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/film_altyazilari"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:destroy": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Destroy and disassociate the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:set": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Set or reset associations",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTks"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:remove": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Detach record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTks"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/film_altyazilari/{collectionIndex}/dosya:toggle": {
+            "post": {
+                "tags": [
+                    "film_altyazilari.dosya"
+                ],
+                "summary": "Attach or detach record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "film_altyazilari",
+            "description": "Film Altyazıları"
+        },
+        {
+            "name": "film_altyazilari.filmler",
+            "description": "Many to one relationship, Film Altyazıları/Filmler"
+        },
+        {
+            "name": "film_altyazilari.dosya",
+            "description": "Many to many relationship, Film Altyazıları/Dosya"
+        }
+    ]
 }
 }

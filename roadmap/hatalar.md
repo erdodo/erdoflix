@@ -46,3 +46,13 @@
     -H 'x-timezone: +03:00' \
     -H 'x-with-acl-meta: true'
     ```
+- [ ] characters 1.4.0 (1.4.1 available)
+  flutter_hooks 0.20.5 (0.21.3+1 available)
+  flutter_lints 5.0.0 (6.0.0 available)
+  go_router 14.8.1 (16.2.4 available)
+  lints 5.1.1 (6.0.0 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.16.0 (1.17.0 available)
+  test_api 0.7.6 (0.7.7 available)
+
+- [x] mobilde player sayfasında ekrana tıklamama rağmen kontroller çıkmıyor (DÜZELTİLDİ - GestureDetector eklendi, ekrana tıklayınca kontroller açılıp kapanıyor)
