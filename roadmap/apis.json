@@ -10323,5 +10323,951 @@
             "url": "/api/"
         }
     ]
+},
+"resume_play":{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "NocoBase API documentation",
+        "description": "",
+        "contact": {
+            "url": "https://github.com/nocobase/nocobase/issues"
+        },
+        "license": {
+            "name": "Core packages are Apache 2.0 & Plugins packages are AGPL 3.0 licensed.",
+            "url": "https://github.com/nocobase/nocobase#license"
+        },
+        "version": "1.8.14"
+    },
+    "externalDocs": {
+        "description": "Find out more about NocoBase",
+        "url": "https://docs.nocobase.com/api/http"
+    },
+    "components": {
+        "securitySchemes": {
+            "api-key": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "error": {
+                "type": "object",
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "description": "错误信息",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "resume_play": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "durum": {
+                        "type": "string"
+                    }
+                }
+            },
+            "resume_play.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/resume_play"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            },
+            "filmler": {
+                "type": "object",
+                "properties": {
+                    "poster": {
+                        "type": "string"
+                    },
+                    "baslik": {
+                        "type": "string"
+                    },
+                    "imdb_id": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "yayin_tarihi": {
+                        "type": "string"
+                    },
+                    "orjinal_baslik": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "arka_plan": {
+                        "type": "string"
+                    },
+                    "detay": {
+                        "type": "string"
+                    },
+                    "tmdb_id": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "updatedById": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "createdById": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filmler.form": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/filmler"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "readOnly": true
+                            },
+                            "createdAt": {
+                                "readOnly": true
+                            },
+                            "updatedAt": {
+                                "readOnly": true
+                            },
+                            "updatedById": {
+                                "readOnly": true
+                            },
+                            "createdById": {
+                                "readOnly": true
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "parameters": {
+            "collectionIndex": {
+                "required": true,
+                "name": "collectionIndex",
+                "in": "path",
+                "description": "collection index",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTk": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TK(default by ID)",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "filterByTks": {
+                "name": "filterByTk",
+                "in": "query",
+                "description": "filter by TKs(default by ID), example: `1,2,3`",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "filter": {
+                "name": "filter",
+                "in": "query",
+                "description": "filter items",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "sort": {
+                "name": "sort",
+                "in": "query",
+                "description": "sort items by fields, example: `-field1,-field2,field3`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "-id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "-id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "fields": {
+                "name": "fields",
+                "in": "query",
+                "description": "select fields, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "except": {
+                "name": "except",
+                "in": "query",
+                "description": "except fields in results, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "appends": {
+                "name": "appends",
+                "in": "query",
+                "description": "append associations in results, example: `assoc1,assoc2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "whitelist": {
+                "name": "whitelist",
+                "in": "query",
+                "description": "whitelist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            },
+            "blacklist": {
+                "name": "blacklist",
+                "in": "query",
+                "description": "blacklist for fields changes, example: `field1,field2`",
+                "schema": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "example": [
+                                "id",
+                                "createdAt"
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "example": "id,createdAt"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "api-key": []
+        }
+    ],
+    "servers": [
+        {
+            "url": "/api/"
+        }
+    ],
+    "paths": {
+        "/resume_play:list": {
+            "get": {
+                "tags": [
+                    "resume_play"
+                ],
+                "summary": "Returns a list of the collection",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/resume_play"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "total count"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "description": "current page"
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "description": "items count per page"
+                                                },
+                                                "totalPage": {
+                                                    "type": "integer",
+                                                    "description": "total page"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play:get": {
+            "get": {
+                "tags": [
+                    "resume_play"
+                ],
+                "summary": "Return a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/resume_play"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play:create": {
+            "post": {
+                "tags": [
+                    "resume_play"
+                ],
+                "summary": "Create record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/resume_play.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/resume_play"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play:update": {
+            "post": {
+                "tags": [
+                    "resume_play"
+                ],
+                "summary": "Update record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/resume_play.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/resume_play"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play:destroy": {
+            "post": {
+                "tags": [
+                    "resume_play"
+                ],
+                "summary": "Delete record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:list": {
+            "get": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Return a list of Many to many relationship",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "page size",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/resume_play"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "total count"
+                                                },
+                                                "page": {
+                                                    "type": "integer",
+                                                    "description": "current page"
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "description": "items count per page"
+                                                },
+                                                "totalPage": {
+                                                    "type": "integer",
+                                                    "description": "total page"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:get": {
+            "get": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Return a record of Many to many",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/fields"
+                    },
+                    {
+                        "$ref": "#/components/parameters/appends"
+                    },
+                    {
+                        "$ref": "#/components/parameters/except"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/resume_play"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:create": {
+            "post": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Create and associate a record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/resume_play.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/resume_play"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:update": {
+            "post": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Update the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/whitelist"
+                    },
+                    {
+                        "$ref": "#/components/parameters/blacklist"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/resume_play.form"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/resume_play"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:destroy": {
+            "post": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Destroy and disassociate the relationship record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:set": {
+            "post": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Set or reset associations",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTks"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:remove": {
+            "post": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Detach record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTks"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/resume_play/{collectionIndex}/film_ids:toggle": {
+            "post": {
+                "tags": [
+                    "resume_play.film_ids"
+                ],
+                "summary": "Attach or detach record",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/collectionIndex"
+                    },
+                    {
+                        "$ref": "#/components/parameters/filterByTk"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "resume_play",
+            "description": "İzleme Geçmişi"
+        },
+        {
+            "name": "resume_play.film_ids",
+            "description": "Many to many relationship, İzleme Geçmişi/Film"
+        }
+    ]
 }
 }

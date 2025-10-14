@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'screens/home_screen.dart';
 import 'screens/film_detail_screen.dart';
 import 'screens/category_screen.dart';
+import 'screens/player_screen.dart';
 import 'models/film.dart';
 import 'models/tur.dart';
 import 'services/api_service.dart';
@@ -72,6 +73,38 @@ final GoRouter _router = GoRouter(
               body: Center(
                 child: Text(
                   'Kategori bulunamadı',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    ),
+    GoRoute(
+      path: '/player/:id',
+      builder: (context, state) {
+        final filmId = int.parse(state.pathParameters['id']!);
+        // Film ID'den film objesini çek
+        return FutureBuilder<Film?>(
+          future: ApiService().getFilm(filmId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: CircularProgressIndicator(color: Colors.red),
+                ),
+              );
+            }
+            if (snapshot.hasData && snapshot.data != null) {
+              return PlayerScreen(film: snapshot.data!);
+            }
+            return const Scaffold(
+              backgroundColor: Colors.black,
+              body: Center(
+                child: Text(
+                  'Film bulunamadı',
                   style: TextStyle(color: Colors.white),
                 ),
               ),

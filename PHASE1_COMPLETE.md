@@ -1,12 +1,12 @@
-# 🎬 ErdoFlix - Phase 1 Tamamlandı! 
+# 🎬 ErdoFlix - Phase 1 Tamamlandı!
 
 ## 📅 Proje Özeti
 
-**Başlangıç Tarihi:** 13 Ekim 2025  
-**Tamamlanma Tarihi:** 14 Ekim 2025  
-**Süre:** ~2 gün  
-**Commit Sayısı:** 26+  
-**Bug Düzeltme:** 24 bug  
+**Başlangıç Tarihi:** 13 Ekim 2025
+**Tamamlanma Tarihi:** 14 Ekim 2025
+**Süre:** ~2 gün
+**Commit Sayısı:** 26+
+**Bug Düzeltme:** 24 bug
 **Satır Kodu:** ~3000+ satır
 
 ---
@@ -293,30 +293,30 @@ Widgets: 3 (FilmCard, HeroBanner, Navbar)
 ## 💪 Zorluklar & Çözümler
 
 ### 1. Focus Management
-**Zorluk:** Navbar'a geçildiğinde önceki sayfanın focus'u kalıyordu  
+**Zorluk:** Navbar'a geçildiğinde önceki sayfanın focus'u kalıyordu
 **Çözüm:** `!_isNavbarFocused` kontrolü ile focus state yalıtımı
 
 ### 2. API Filter Format
-**Zorluk:** Kategori filmleri yüklenmiyordu  
+**Zorluk:** Kategori filmleri yüklenmiyordu
 **Çözüm:** NocoBase filter formatına geçiş: `{"$and":[{"turler":{"id":{"$eq":turId}}}]}`
 
 ### 3. Navigation Issues
-**Zorluk:** Back button çalışmıyordu  
+**Zorluk:** Back button çalışmıyordu
 **Çözüm:** `Navigator.pop` yerine `context.go('/')` kullanımı
 
 ### 4. Scroll Management
-**Zorluk:** Focus değişince scroll ayarlanmıyordu  
+**Zorluk:** Focus değişince scroll ayarlanmıyordu
 **Çözüm:** `ScrollController` ile otomatik scroll to focused element
 
 ### 5. Z-Index Problems
-**Zorluk:** Focus'taki kart altında kalıyordu  
+**Zorluk:** Focus'taki kart altında kalıyordu
 **Çözüm:** Dynamic z-index: `Stack` + `Positioned` with conditional zIndex
 
 ---
 
 ## 🎉 Sonuç
 
-**ErdoFlix Phase 1** başarıyla tamamlandı! 
+**ErdoFlix Phase 1** başarıyla tamamlandı!
 
 - ✅ Tüm planlanan özellikler çalışıyor
 - ✅ 24 bug düzeltildi
@@ -329,8 +329,8 @@ Proje, modern bir Netflix-style film platformu olarak güçlü bir temel üzerin
 
 ## 📞 İletişim
 
-**Geliştirici:** AI Assistant (GitHub Copilot) + Erdoğan Yeşil  
-**Repository:** https://github.com/erdodo/erdoflix  
+**Geliştirici:** AI Assistant (GitHub Copilot) + Erdoğan Yeşil
+**Repository:** https://github.com/erdodo/erdoflix
 **Tarih:** 14 Ekim 2025
 
 ---

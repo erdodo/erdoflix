@@ -136,8 +136,13 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
   void _handleButtonPress(int buttonIndex) {
     switch (buttonIndex) {
       case 0:
-        // İzle butonu
-        _showComingSoon('Video oynatıcı yakında eklenecek');
+        // İzle butonu - Player'a git
+        final film = _detailedFilm ?? widget.film;
+        if (film.hasVideo) {
+          context.go('/player/${film.id}');
+        } else {
+          _showComingSoon('Bu film için video kaynağı bulunamadı');
+        }
         break;
       case 1:
         // Listeye Ekle butonu

@@ -249,6 +249,6 @@ Yeni özellik önerileriniz için:
 
 ---
 
-**Son Güncelleme:** 14 Ekim 2025  
-**Versiyon:** 1.0  
+**Son Güncelleme:** 14 Ekim 2025
+**Versiyon:** 1.0
 **Platform:** Flutter Web

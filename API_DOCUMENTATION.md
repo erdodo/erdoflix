@@ -410,11 +410,11 @@ try {
 
 ## 8. İletişim
 
-**Backend:** NocoBase  
-**Admin Panel:** https://app.erdoganyesil.org/apps/erdoFlix/admin  
+**Backend:** NocoBase
+**Admin Panel:** https://app.erdoganyesil.org/apps/erdoFlix/admin
 **API Docs:** Bu döküman
 
 ---
 
-**Son Güncelleme:** 14 Ekim 2025  
+**Son Güncelleme:** 14 Ekim 2025
 **Versiyon:** 1.0

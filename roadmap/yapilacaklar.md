@@ -44,11 +44,18 @@ baseUrl: https://app.erdoganyesil.org
         - Mobilde son film satırından aşağı ok ile navbar'a geçiş
 ### 2
 
+- [x] player sayfası tasarımı (TAMAMLANDI - better_player ile full-featured player)
+    - [x] navigasyon tuşlarına tam destek (Space/K, ←→, ↑↓, F, M, C, Q, Esc)
+    - [x] birden fazla kaynak desteği (Kalite seçimi: Q tuşu veya menü)
+    - [x] altyazı desteği (SRT/WEBVTT, C tuşu ile seçim)
+    - [x] oynatma hızı kontrolü (Better player built-in)
+    - [x] mouse hareketleri veya klavye tuşları tetiklendiğinde butonlar açılsın yoksa direkt tam ekran oynasın (3sn otomatik gizlenme)
+    - [x] video oynatıcı kontrolleri (play/pause, ileri/geri 10 saniye, ses açma/kapatma, tam ekran)
+    - [x] video oynatıcı progress bar (ilerleme çubuğu) (Better player built-in)
+    - [x] kaldığı yerden devam etme (resume_play API entegrasyonu, otomatik kaydetme)
+    - [x] diğer playerlarda bulunan özellikler (Notifications, Picture-in-Picture hazır)
+
 - [ ] arama sayfası tasarımı
-- [ ] player sayfası tasarımı
-    - [ ] player sayfası mümkünse cihazın kendi oynatıcısını kullanmalı
-    - [ ] player sayfası mümkünse cihazın kendi altyazı ve ses seçeneklerini kullanmalı
-    - [ ] player sayfası mümkünse cihazın kendi ileri, geri, duraklat, oynat kontrollerini kullanmalı
 - [ ] kullanıcı girişi ve kayıt sayfası tasarımı
 - [ ] kullanıcı profili sayfası tasarımı
 - [ ] kullanıcı ayarları sayfası tasarımı
