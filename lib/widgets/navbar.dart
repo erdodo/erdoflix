@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:ui';
+import '../utils/app_theme.dart';
 
 class NavBar extends StatefulWidget {
   final int focusedIndex;
@@ -39,34 +41,52 @@ class _NavBarState extends State<NavBar> {
   }
 
   Widget _buildMobileNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.95),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        // Mobile navbar için sadece bottom SafeArea (navigation bar için)
-        top: false,
-        bottom: true,
-        left: true,
-        right: true,
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          height: 70,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(_navItems.length, (index) {
-              return _buildNavButton(
-                item: _navItems[index],
-                index: index,
-                isMobile: true,
-              );
-            }),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppTheme.backgroundLight.withOpacity(0.7),
+                AppTheme.background.withOpacity(0.9),
+              ],
+            ),
+            border: Border(
+              top: BorderSide(
+                color: AppTheme.primary.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            top: false,
+            bottom: true,
+            left: true,
+            right: true,
+            child: Container(
+              height: 75,
+              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingSmall),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(_navItems.length, (index) {
+                  return _buildNavButton(
+                    item: _navItems[index],
+                    index: index,
+                    isMobile: true,
+                  );
+                }),
+              ),
+            ),
           ),
         ),
       ),
@@ -74,39 +94,56 @@ class _NavBarState extends State<NavBar> {
   }
 
   Widget _buildDesktopNavBar() {
-    return Container(
-      width: 80,
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.95),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(2, 0), // Sağdan sola gölge
-          ),
-        ],
-      ),
-      child: SafeArea(
-        // Desktop navbar için sadece top ve bottom SafeArea
-        top: true,
-        bottom: true,
-        left: false,
-        right: false,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: List.generate(_navItems.length, (index) {
-            return Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: _buildNavButton(
-                  item: _navItems[index],
-                  index: index,
-                  isMobile: false,
-                ),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          width: 85,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                AppTheme.background.withOpacity(0.9),
+                AppTheme.backgroundLight.withOpacity(0.7),
+              ],
+            ),
+            border: Border(
+              right: BorderSide(
+                color: AppTheme.primary.withOpacity(0.2),
+                width: 1,
               ),
-            );
-          }),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(4, 0),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            top: true,
+            bottom: true,
+            left: false,
+            right: false,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              children: List.generate(_navItems.length, (index) {
+                return Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: _buildNavButton(
+                      item: _navItems[index],
+                      index: index,
+                      isMobile: false,
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
         ),
       ),
     );
@@ -126,59 +163,67 @@ class _NavBarState extends State<NavBar> {
           context.go(item.route);
         }
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 60,
-        constraints: const BoxConstraints(minHeight: 48, maxHeight: 60),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Colors.red.withValues(alpha: 0.3)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? Colors.red : Colors.transparent,
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.red.withValues(alpha: 0.5),
-                    blurRadius: 20,
-                    spreadRadius: 2,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: isSelected ? 1.0 : 0.0),
+        duration: AppTheme.animationMedium,
+        curve: AppTheme.animationCurve,
+        builder: (context, value, child) {
+          return Transform.scale(
+            scale: 1.0 + (value * 0.1), // Hafif scale efekti
+            child: Container(
+              width: 64,
+              constraints: const BoxConstraints(minHeight: 52, maxHeight: 68),
+              decoration: BoxDecoration(
+                gradient: isSelected
+                    ? LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppTheme.primary,
+                          AppTheme.primaryLight,
+                        ],
+                      )
+                    : null,
+                color: isSelected ? null : Colors.transparent,
+                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                border: Border.all(
+                  color: isSelected 
+                      ? AppTheme.primary 
+                      : Colors.transparent,
+                  width: 2,
+                ),
+                boxShadow: isSelected ? AppTheme.glowShadow : null,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    item.icon,
+                    color: isSelected
+                        ? AppTheme.textPrimary
+                        : AppTheme.textSecondary,
+                    size: isSelected ? 28 : 24,
                   ),
-                  BoxShadow(
-                    color: Colors.red.withValues(alpha: 0.3),
-                    blurRadius: 30,
-                    spreadRadius: 4,
+                  const SizedBox(height: AppTheme.spacingXSmall),
+                  Text(
+                    item.label,
+                    textAlign: TextAlign.center,
+                    style: AppTheme.labelSmall.copyWith(
+                      color: isSelected
+                          ? AppTheme.textPrimary
+                          : AppTheme.textSecondary,
+                      fontWeight: isSelected 
+                          ? FontWeight.w700 
+                          : FontWeight.w500,
+                      fontSize: 10,
+                    ),
                   ),
-                ]
-              : [],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              item.icon,
-              color: isSelected
-                  ? Colors.white
-                  : Colors.white.withValues(alpha: 0.6),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              item.label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: isSelected
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.6),
-                fontSize: 9,
-                fontWeight: FontWeight.normal,
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

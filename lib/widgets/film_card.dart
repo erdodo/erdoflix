@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/film.dart';
+import '../utils/app_theme.dart';
 
 class FilmCard extends StatefulWidget {
   final Film film;
@@ -20,6 +22,7 @@ class FilmCard extends StatefulWidget {
 class _FilmCardState extends State<FilmCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _shimmerController;
+  bool _imageLoaded = false;
 
   @override
   void initState() {
@@ -41,108 +44,119 @@ class _FilmCardState extends State<FilmCard>
     return GestureDetector(
       onTap: widget.onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
+        duration: AppTheme.animationMedium,
+        curve: AppTheme.animationCurve,
         transform: Matrix4.identity()
-          ..scale(widget.isFocused ? 1.15 : 1.0)
-          ..rotateZ(widget.isFocused ? 0.01 : 0.0), // Hafif 3D tilt
+          ..scale(widget.isFocused ? 1.12 : 1.0)
+          ..translate(0.0, widget.isFocused ? -8.0 : 0.0), // Yukarı hareket
         alignment: Alignment.center,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            // Gradient border effect
-            gradient: widget.isFocused
-                ? LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.red.withValues(alpha: 0.8),
-                      Colors.orange.withValues(alpha: 0.8),
-                      Colors.red.withValues(alpha: 0.8),
-                    ],
-                  )
-                : null,
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            gradient: widget.isFocused ? AppTheme.primaryGradient : null,
             boxShadow: widget.isFocused
-                ? [
-                    // Neon glow - kırmızı
-                    BoxShadow(
-                      color: Colors.red.withValues(alpha: 0.5),
-                      blurRadius: 25,
-                      spreadRadius: 5,
-                    ),
-                    // Outer glow - turuncu
-                    BoxShadow(
-                      color: Colors.orange.withValues(alpha: 0.3),
-                      blurRadius: 35,
-                      spreadRadius: 8,
-                    ),
-                    // Soft white glow
-                    BoxShadow(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      blurRadius: 40,
-                      spreadRadius: 10,
-                    ),
-                  ]
-                : [
-                    // Subtle shadow when not focused
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                ? AppTheme.cardShadowFocused
+                : AppTheme.cardShadow,
           ),
           // Inner container for content
           child: Container(
             margin: widget.isFocused
-                ? const EdgeInsets.all(2)
+                ? const EdgeInsets.all(3)
                 : EdgeInsets.zero,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(widget.isFocused ? 10 : 12),
-              color: Colors.black,
+              borderRadius: BorderRadius.circular(
+                widget.isFocused ? AppTheme.radiusMedium - 2 : AppTheme.radiusMedium,
+              ),
+              color: AppTheme.backgroundCard,
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(widget.isFocused ? 10 : 12),
+              borderRadius: BorderRadius.circular(
+                widget.isFocused ? AppTheme.radiusMedium - 2 : AppTheme.radiusMedium,
+              ),
               child: AspectRatio(
-                aspectRatio: 2 / 3, // Film poster oranı (genişlik/yükseklik)
+                aspectRatio: 2 / 3, // Film poster oranı
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Placeholder veya gerçek poster
+                    // Poster image
                     widget.film.poster != null
                         ? Image.network(
                             widget.film.poster!,
                             fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                _imageLoaded = true;
+                                return child;
+                              }
+                              return _buildPlaceholder();
+                            },
                             errorBuilder: (context, error, stackTrace) {
                               return _buildPlaceholder();
                             },
                           )
                         : _buildPlaceholder(),
-                    // Play icon overlay (focused olduğunda)
+                    
+                    // Gradient overlay (bottom)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.8),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    // Film title overlay
+                    Positioned(
+                      bottom: AppTheme.spacingSmall,
+                      left: AppTheme.spacingSmall,
+                      right: AppTheme.spacingSmall,
+                      child: Text(
+                        widget.film.baslik,
+                        style: AppTheme.labelMedium.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    
+                    // Play button overlay (focused)
                     if (widget.isFocused)
                       Center(
-                        child: AnimatedOpacity(
-                          opacity: widget.isFocused ? 1.0 : 0.0,
-                          duration: const Duration(milliseconds: 300),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.red.withValues(alpha: 0.9),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.red.withValues(alpha: 0.5),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0.0, end: widget.isFocused ? 1.0 : 0.0),
+                          duration: AppTheme.animationMedium,
+                          curve: AppTheme.animationBounceCurve,
+                          builder: (context, value, child) {
+                            return Transform.scale(
+                              scale: value,
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: AppTheme.primaryGradient,
+                                  boxShadow: AppTheme.glowShadow,
                                 ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.play_arrow,
-                              size: 40,
-                              color: Colors.white,
-                            ),
-                          ),
+                                child: const Icon(
+                                  Icons.play_arrow_rounded,
+                                  size: 48,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
 
@@ -257,27 +271,55 @@ class _FilmCardState extends State<FilmCard>
   }
 
   Widget _buildPlaceholder() {
-    return Container(
-      color: Colors.grey[900],
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.movie, color: Colors.white54, size: 48),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                widget.film.baslik,
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+    return AnimatedBuilder(
+      animation: _shimmerController,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppTheme.backgroundCard,
+                AppTheme.backgroundMedium,
+                AppTheme.backgroundCard,
+              ],
+              stops: [
+                (_shimmerController.value - 0.3).clamp(0.0, 1.0),
+                _shimmerController.value,
+                (_shimmerController.value + 0.3).clamp(0.0, 1.0),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.movie_rounded,
+                  color: AppTheme.textTertiary,
+                  size: 48,
+                ),
+                const SizedBox(height: AppTheme.spacingSmall),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacingSmall,
+                  ),
+                  child: Text(
+                    widget.film.baslik,
+                    style: AppTheme.bodySmall.copyWith(
+                      color: AppTheme.textTertiary,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

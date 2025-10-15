@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import '../models/film.dart';
 import '../models/resume_play.dart';
 import '../services/resume_play_service.dart';
@@ -44,6 +45,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   // Altyazı seçimi
   int _selectedAltyaziIndex = -1; // -1: Altyazı yok
+  List<Subtitle> _currentSubtitles = []; // Yüklü alt yazılar
+  String _currentSubtitleText = ''; // Şu anda gösterilecek alt yazı
 
   // Player'a girerken mevcut orientation'ı sakla
   List<DeviceOrientation>? _previousOrientations;
@@ -268,6 +271,44 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     if (position >= duration && duration.inSeconds > 0) {
       _onVideoFinished();
+    }
+
+    // Alt yazı güncelle
+    _updateSubtitle(position);
+  }
+
+  // Alt yazı metnini temizle (ASS/SSA etiketlerini kaldır)
+  String _cleanSubtitleText(String text) {
+    // {\an8}, {\i1}, {\b1} gibi etiketleri kaldır
+    String cleaned = text.replaceAll(RegExp(r'\{[^}]*\}'), '');
+    // HTML etiketlerini kaldır
+    cleaned = cleaned.replaceAll(RegExp(r'<[^>]*>'), '');
+    return cleaned.trim();
+  }
+
+  // Şu anki pozisyona göre alt yazıyı güncelle
+  void _updateSubtitle(Duration position) {
+    if (_currentSubtitles.isEmpty) {
+      if (_currentSubtitleText.isNotEmpty) {
+        setState(() => _currentSubtitleText = '');
+      }
+      return;
+    }
+
+    // Şu anki pozisyona uygun alt yazıyı bul
+    for (var subtitle in _currentSubtitles) {
+      if (position >= subtitle.start && position <= subtitle.end) {
+        final cleanedText = _cleanSubtitleText(subtitle.text);
+        if (_currentSubtitleText != cleanedText) {
+          setState(() => _currentSubtitleText = cleanedText);
+        }
+        return;
+      }
+    }
+
+    // Hiçbir alt yazı bulunamadı
+    if (_currentSubtitleText.isNotEmpty) {
+      setState(() => _currentSubtitleText = '');
     }
   }
 
@@ -499,7 +540,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  setState(() => _selectedAltyaziIndex = -1);
+                  _changeSubtitle(-1);
                 },
               ),
               // Altyazı listesi
@@ -526,8 +567,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    setState(() => _selectedAltyaziIndex = index);
-                    // TODO: Altyazı yükleme implementasyonu
+                    _changeSubtitle(index);
                   },
                 );
               }).toList(),
@@ -536,6 +576,137 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
       ),
     );
+  }
+
+  // SRT dosyasını parse et
+  Future<List<Subtitle>> _parseSrtFile(String url) async {
+    try {
+      debugPrint('📥 Alt yazı indiriliyor: $url');
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode != 200) {
+        debugPrint('❌ Alt yazı indirilemedi: ${response.statusCode}');
+        return [];
+      }
+
+      final content = response.body;
+      final subtitles = <Subtitle>[];
+      final blocks = content.split('\n\n');
+
+      for (var block in blocks) {
+        final lines = block.trim().split('\n');
+        if (lines.length < 3) continue;
+
+        // İlk satır index (atla)
+        // İkinci satır zaman damgası
+        final timeLine = lines[1];
+        final timeMatch = RegExp(
+          r'(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})',
+        ).firstMatch(timeLine);
+
+        if (timeMatch == null) continue;
+
+        final startHour = int.parse(timeMatch.group(1)!);
+        final startMin = int.parse(timeMatch.group(2)!);
+        final startSec = int.parse(timeMatch.group(3)!);
+        final startMs = int.parse(timeMatch.group(4)!);
+
+        final endHour = int.parse(timeMatch.group(5)!);
+        final endMin = int.parse(timeMatch.group(6)!);
+        final endSec = int.parse(timeMatch.group(7)!);
+        final endMs = int.parse(timeMatch.group(8)!);
+
+        final start = Duration(
+          hours: startHour,
+          minutes: startMin,
+          seconds: startSec,
+          milliseconds: startMs,
+        );
+
+        final end = Duration(
+          hours: endHour,
+          minutes: endMin,
+          seconds: endSec,
+          milliseconds: endMs,
+        );
+
+        // Kalan satırlar metin
+        final text = lines.sublist(2).join('\n').trim();
+
+        subtitles.add(
+          Subtitle(
+            index: subtitles.length,
+            start: start,
+            end: end,
+            text: text,
+          ),
+        );
+      }
+
+      debugPrint('✅ ${subtitles.length} alt yazı parse edildi');
+      return subtitles;
+    } catch (e) {
+      debugPrint('❌ Alt yazı parse hatası: $e');
+      return [];
+    }
+  }
+
+  // Altyazı değiştir
+  Future<void> _changeSubtitle(int index) async {
+    setState(() {
+      _selectedAltyaziIndex = index;
+      _currentSubtitleText = '';
+    });
+
+    // Alt yazı yükle (eğer seçilmişse)
+    if (index >= 0 && widget.film.altyazilar != null && index < widget.film.altyazilar!.length) {
+      final altyaziUrl = widget.film.altyazilar![index].url;
+      final subtitles = await _parseSrtFile(altyaziUrl);
+      
+      if (subtitles.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Alt yazı yüklenemedi'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+        setState(() {
+          _selectedAltyaziIndex = -1;
+          _currentSubtitles = [];
+        });
+        return;
+      }
+
+      setState(() => _currentSubtitles = subtitles);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Alt yazı: ${widget.film.altyazilar![index].baslik}'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } else {
+      // Alt yazı kapatıldı
+      setState(() => _currentSubtitles = []);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('❌ Alt yazı kapatıldı'),
+            backgroundColor: Colors.grey[800],
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+
+    debugPrint('✅ Altyazı değiştirildi: ${index >= 0 ? widget.film.altyazilar![index].baslik : "Yok"}');
   }
 
   // Oynatma hızı menüsü
@@ -845,6 +1016,44 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           children: [
                             // Video player
                             Chewie(controller: _chewieController!),
+
+                            // Alt yazı gösterimi
+                            if (_currentSubtitleText.isNotEmpty)
+                              Positioned(
+                                bottom: 100,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 40),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.85),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      _currentSubtitleText,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.4,
+                                        shadows: [
+                                          Shadow(
+                                            offset: Offset(1.5, 1.5),
+                                            blurRadius: 3,
+                                            color: Colors.black,
+                                          ),
+                                        ],
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
 
                             // Custom overlay kontroller
                             if (_showControls) _buildCustomControls(),
