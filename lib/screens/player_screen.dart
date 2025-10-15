@@ -29,14 +29,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   // Custom kontroller için
   bool _showControls = true;
-  DateTime? _lastInteraction;
   int _focusedControl = -1; // -1: video, 0: geri, 1: progress, 2: butonlar
   int _focusedButton =
       0; // Alt butonlar: 0: play/pause, 1: kaynak, 2: altyazı, 3: hız, 4: PIP
   Timer? _hideTimer;
 
   // Progress bar uzun basma için
-  DateTime? _seekPressStart;
   Timer? _seekTimer;
   int _seekMultiplier = 1; // 5sn × multiplier
 
@@ -313,7 +311,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     // Kontrolleri göster ve timer'ı sıfırla
     setState(() {
       _showControls = true;
-      _lastInteraction = DateTime.now();
     });
     _resetHideTimer();
 
@@ -638,7 +635,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
       return;
 
     // İlk seek'i hemen yap (5 saniye)
-    _seekPressStart = DateTime.now();
     _seekMultiplier = 1;
 
     final currentPosition = _videoPlayerController!.value.position;
@@ -686,7 +682,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _seekTimer?.cancel();
     _seekTimer = null;
     _seekMultiplier = 1;
-    _seekPressStart = null;
   }
 
   @override
@@ -839,7 +834,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         onTap: () {
                           setState(() {
                             _showControls = !_showControls;
-                            _lastInteraction = DateTime.now();
                           });
                           if (_showControls) {
                             _resetHideTimer();
@@ -941,39 +935,59 @@ class _PlayerScreenState extends State<PlayerScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Column(
         children: [
-          // Progress slider
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            height: isFocused ? 8 : 4,
-            decoration: BoxDecoration(
-              border: isFocused
-                  ? Border.all(color: Colors.white, width: 2)
-                  : null,
-              borderRadius: BorderRadius.circular(4),
+          // Tıklanabilir Progress Slider
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: Colors.red,
+              inactiveTrackColor: Colors.grey[800],
+              thumbColor: Colors.red,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8.0),
+              overlayColor: Colors.red.withOpacity(0.3),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 16.0),
+              trackHeight: isFocused ? 6.0 : 4.0,
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.grey[800],
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-              ),
+            child: Slider(
+              value: progress.clamp(0.0, 1.0),
+              min: 0.0,
+              max: 1.0,
+              onChanged: (value) {
+                final newPosition = duration * value;
+                controller.seekTo(newPosition);
+                setState(() {});
+              },
+              onChangeStart: (value) {
+                // Kullanıcı slider'ı kullanırken kontrolleri göster
+                _hideTimer?.cancel();
+              },
+              onChangeEnd: (value) {
+                // Slider bırakıldığında timer'ı yeniden başlat
+                _resetHideTimer();
+              },
             ),
           ),
-          const SizedBox(height: 8),
           // Zaman göstergesi
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _formatDuration(position),
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-              ),
-              Text(
-                _formatDuration(duration),
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _formatDuration(position),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  _formatDuration(duration),
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -987,32 +1001,93 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Geri 10sn
-          _buildControlButton(
-            icon: Icons.replay_10,
-            label: '10sn Geri',
-            isFocused: isFocused && _focusedButton == 2,
-            onPressed: () => _handleButtonPress(2),
+          // Üst sıra - Ana oynatma kontrolleri
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Geri 10sn
+              _buildControlButton(
+                icon: Icons.replay_10,
+                label: '',
+                isFocused: isFocused && _focusedButton == 2,
+                onPressed: () {
+                  if (controller != null && controller.value.isInitialized) {
+                    final newPos = controller.value.position - const Duration(seconds: 10);
+                    controller.seekTo(newPos < Duration.zero ? Duration.zero : newPos);
+                  }
+                },
+              ),
+              const SizedBox(width: 30),
+              // Play/Pause
+              _buildControlButton(
+                icon: isPlaying ? Icons.pause : Icons.play_arrow,
+                label: '',
+                isFocused: isFocused && _focusedButton == 0,
+                onPressed: () {
+                  if (controller != null && controller.value.isInitialized) {
+                    if (isPlaying) {
+                      controller.pause();
+                    } else {
+                      controller.play();
+                    }
+                    setState(() {});
+                  }
+                },
+                isLarge: true,
+              ),
+              const SizedBox(width: 30),
+              // İleri 10sn
+              _buildControlButton(
+                icon: Icons.forward_10,
+                label: '',
+                isFocused: isFocused && _focusedButton == 1,
+                onPressed: () {
+                  if (controller != null && controller.value.isInitialized) {
+                    final newPos = controller.value.position + const Duration(seconds: 10);
+                    final duration = controller.value.duration;
+                    controller.seekTo(newPos > duration ? duration : newPos);
+                  }
+                },
+              ),
+            ],
           ),
-          const SizedBox(width: 40),
-          // Play/Pause
-          _buildControlButton(
-            icon: isPlaying ? Icons.pause : Icons.play_arrow,
-            label: isPlaying ? 'Duraklat' : 'Oynat',
-            isFocused: isFocused && _focusedButton == 0,
-            onPressed: () => _handleButtonPress(0),
-            isLarge: true,
-          ),
-          const SizedBox(width: 40),
-          // İleri 10sn
-          _buildControlButton(
-            icon: Icons.forward_10,
-            label: '10sn İleri',
-            isFocused: isFocused && _focusedButton == 1,
-            onPressed: () => _handleButtonPress(1),
+          const SizedBox(height: 20),
+          // Alt sıra - Ek kontroller
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Kaynak seçimi
+              _buildSmallControlButton(
+                icon: Icons.video_library,
+                label: widget.film.kaynaklar != null && widget.film.kaynaklar!.isNotEmpty
+                    ? widget.film.kaynaklar![_selectedKaynakIndex].baslik
+                    : 'Kaynak',
+                isFocused: isFocused && _focusedButton == 3,
+                onPressed: _showKaynakMenu,
+              ),
+              // Altyazı seçimi
+              _buildSmallControlButton(
+                icon: Icons.closed_caption,
+                label: _selectedAltyaziIndex == -1
+                    ? 'Altyazı'
+                    : (widget.film.altyazilar != null &&
+                            _selectedAltyaziIndex < widget.film.altyazilar!.length)
+                        ? widget.film.altyazilar![_selectedAltyaziIndex].baslik
+                        : 'Altyazı',
+                isFocused: isFocused && _focusedButton == 4,
+                onPressed: _showAltyaziMenu,
+              ),
+              // Hız ayarı
+              _buildSmallControlButton(
+                icon: Icons.speed,
+                label: '${_playbackSpeeds[_selectedSpeedIndex]}x',
+                isFocused: isFocused && _focusedButton == 5,
+                onPressed: _showHizMenu,
+              ),
+            ],
           ),
         ],
       ),
@@ -1056,16 +1131,62 @@ class _PlayerScreenState extends State<PlayerScreen> {
             onPressed: onPressed,
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            color: isFocused ? Colors.white : Colors.white70,
-            fontSize: 12,
-            fontWeight: isFocused ? FontWeight.bold : FontWeight.normal,
+        if (label.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: isFocused ? Colors.white : Colors.white70,
+              fontSize: 12,
+              fontWeight: isFocused ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
-        ),
+        ],
       ],
+    );
+  }
+
+  Widget _buildSmallControlButton({
+    required IconData icon,
+    required String label,
+    required bool isFocused,
+    required VoidCallback onPressed,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isFocused ? Colors.red : Colors.black54,
+          borderRadius: BorderRadius.circular(8),
+          border: isFocused
+              ? Border.all(color: Colors.white, width: 2)
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: isFocused ? FontWeight.bold : FontWeight.normal,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
