@@ -1,14 +1,16 @@
 class Kaynak {
   final int id;
   final String baslik; // "1080p", "720p", "4K" vs.
-  final String url; // Video URL'i (M3U8, MP4 vs.)
+  final String url; // Video URL'i (M3U8, MP4 vs.) veya iframe URL'i
   final int? kaynakId; // Kaynak tipi ID (Netflix, Prime vs.)
+  final bool isIframe; // iframe kaynağı mı?
 
   Kaynak({
     required this.id,
     required this.baslik,
     required this.url,
     this.kaynakId,
+    this.isIframe = false,
   });
 
   factory Kaynak.fromJson(Map<String, dynamic> json) {
@@ -17,11 +19,18 @@ class Kaynak {
       baslik: json['baslik'] ?? 'Varsayılan',
       url: json['url'] ?? '',
       kaynakId: json['kaynak_id'],
+      isIframe: json['is_iframe'] == true || json['is_iframe'] == 1,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'baslik': baslik, 'url': url, 'kaynak_id': kaynakId};
+    return {
+      'id': id,
+      'baslik': baslik,
+      'url': url,
+      'kaynak_id': kaynakId,
+      'is_iframe': isIframe,
+    };
   }
 
   // Kalite sıralama için

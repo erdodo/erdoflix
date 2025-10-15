@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'screens/home_screen.dart';
 import 'screens/film_detail_screen.dart';
 import 'screens/category_screen.dart';
 import 'screens/player_screen.dart';
+import 'screens/search_screen.dart';
+import 'screens/iframe_player_screen.dart';
 import 'models/film.dart';
 import 'models/tur.dart';
+import 'models/kaynak.dart';
 import 'services/api_service.dart';
 import 'services/tur_service.dart';
 import 'services/film_cache_service.dart';
@@ -49,6 +51,7 @@ final GoRouter _router = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+    GoRoute(path: '/search', builder: (context, state) => const SearchScreen()),
     GoRoute(
       path: '/film/:id',
       builder: (context, state) {
@@ -109,6 +112,85 @@ final GoRouter _router = GoRouter(
                 ),
               ),
             );
+          },
+        );
+      },
+    ),
+    GoRoute(
+      path: '/iframe-player/:filmId/:kaynakId',
+      builder: (context, state) {
+        final filmId = int.parse(state.pathParameters['filmId']!);
+        final kaynakId = int.parse(state.pathParameters['kaynakId']!);
+
+        return FutureBuilder<Film?>(
+          future: ApiService().getFilmWithDetails(filmId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (snapshot.hasError || !snapshot.hasData) {
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: Text(
+                    'Film yüklenemedi',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              );
+            }
+
+            final film = snapshot.data!;
+
+            // Kaynak listesini kontrol et
+            if (film.kaynaklar == null || film.kaynaklar!.isEmpty) {
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: Text(
+                    'Film kaynakları bulunamadı',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              );
+            }
+
+            // Kaynak ID ile eşleşen kaynağı bul
+            Kaynak? kaynak;
+            try {
+              kaynak = film.kaynaklar!.firstWhere((k) => k.id == kaynakId);
+            } catch (e) {
+              debugPrint('❌ Kaynak bulunamadı: $kaynakId');
+              debugPrint(
+                '❌ Mevcut kaynaklar: ${film.kaynaklar!.map((k) => k.id).toList()}',
+              );
+
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Kaynak bulunamadı (ID: $kaynakId)',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => context.go('/film/$filmId'),
+                        child: Text('Film Detayına Dön'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return IframePlayerScreen(film: film, kaynak: kaynak);
           },
         );
       },

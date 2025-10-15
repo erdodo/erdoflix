@@ -182,9 +182,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.primary,
-            ),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.primary),
             child: const Text('Tamam'),
           ),
         ],
@@ -247,230 +245,239 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
     final film = _detailedFilm ?? widget.film;
     final isMobile = MediaQuery.of(context).size.width < 800;
 
-    return RawKeyboardListener(
-      focusNode: FocusNode()..requestFocus(),
-      onKey: (event) => _handleKeyEvent(event),
-      child: Scaffold(
-        backgroundColor: AppTheme.background,
-        body: SafeArea(
-          top: true,
-          bottom: false,
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: AppTheme.primary,
-                    strokeWidth: 3,
-                  ),
-                )
-              : Row(
-                  children: [
-                    // Desktop navbar (solda)
-                    if (!isMobile)
-                      NavBar(
-                        focusedIndex: _navbarFocusedIndex,
-                        onFocusChanged: (index) {
-                          setState(() {
-                            _navbarFocusedIndex = index;
-                            _isNavbarFocused = true;
-                          });
-                        },
-                        isFocused: _isNavbarFocused,
-                      ),
-                    // Ana içerik
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Hero Banner with Backdrop
-                            Stack(
-                              children: [
-                                // Backdrop Image
-                                if (film.arkaPlan != null)
-                                  SizedBox(
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          context.go('/');
+        }
+      },
+      child: RawKeyboardListener(
+        focusNode: FocusNode()..requestFocus(),
+        onKey: (event) => _handleKeyEvent(event),
+        child: Scaffold(
+          backgroundColor: AppTheme.background,
+          body: SafeArea(
+            top: true,
+            bottom: false,
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: AppTheme.primary,
+                      strokeWidth: 3,
+                    ),
+                  )
+                : Row(
+                    children: [
+                      // Desktop navbar (solda)
+                      if (!isMobile)
+                        NavBar(
+                          focusedIndex: _navbarFocusedIndex,
+                          onFocusChanged: (index) {
+                            setState(() {
+                              _navbarFocusedIndex = index;
+                              _isNavbarFocused = true;
+                            });
+                          },
+                          isFocused: _isNavbarFocused,
+                        ),
+                      // Ana içerik
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Hero Banner with Backdrop
+                              Stack(
+                                children: [
+                                  // Backdrop Image
+                                  if (film.arkaPlan != null)
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 500,
+                                      child: CachedNetworkImage(
+                                        imageUrl: film.arkaPlan!,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            Container(color: Colors.grey[900]),
+                                        errorWidget: (context, url, error) =>
+                                            Container(color: Colors.grey[900]),
+                                      ),
+                                    ),
+                                  // Gradient Overlay
+                                  Container(
                                     width: double.infinity,
                                     height: 500,
-                                    child: CachedNetworkImage(
-                                      imageUrl: film.arkaPlan!,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          Container(color: Colors.grey[900]),
-                                      errorWidget: (context, url, error) =>
-                                          Container(color: Colors.grey[900]),
+                                    decoration: BoxDecoration(
+                                      gradient: AppTheme.heroGradient,
                                     ),
                                   ),
-                                // Gradient Overlay
-                                Container(
-                                  width: double.infinity,
-                                  height: 500,
-                                  decoration: BoxDecoration(
-                                    gradient: AppTheme.heroGradient,
-                                  ),
-                                ),
-                                // Back Button with glassmorphism
-                                Positioned(
-                                  top: 40,
-                                  left: 20,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-                                    child: BackdropFilter(
-                                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.3),
-                                          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-                                          border: Border.all(
-                                            color: Colors.white.withOpacity(0.2),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: IconButton(
-                                          icon: const Icon(
-                                            Icons.arrow_back,
-                                            color: Colors.white,
-                                            size: 28,
-                                          ),
-                                          onPressed: () => context.go('/'),
-                                        ),
+                                  // Back Button with glassmorphism
+                                  Positioned(
+                                    top: 40,
+                                    left: 20,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        AppTheme.radiusLarge,
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                // Film Info
-                                Positioned(
-                                  bottom: 40,
-                                  left: 40,
-                                  right: 40,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Title
-                                      Text(
-                                        film.baslik,
-                                        style: isMobile
-                                            ? AppTheme.displaySmall
-                                            : AppTheme.displayLarge,
-                                      ),
-                                      SizedBox(height: AppTheme.spacingSmall),
-                                      // Metadata
-                                      Wrap(
-                                        spacing: AppTheme.spacingSmall,
-                                        runSpacing: AppTheme.spacingXSmall,
-                                        children: [
-                                          if (film.yayinTarihi != null)
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: AppTheme.spacingSmall,
-                                                vertical: AppTheme.spacingXSmall,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: AppTheme.backgroundCard.withOpacity(0.6),
-                                                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                                                border: Border.all(
-                                                  color: AppTheme.primary.withOpacity(0.3),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: Text(
-                                                film.yayinTarihi!,
-                                                style: AppTheme.labelMedium,
-                                              ),
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                          sigmaX: 10,
+                                          sigmaY: 10,
+                                        ),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withOpacity(
+                                              0.3,
                                             ),
-                                          ...film.turler.map((tur) => Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: AppTheme.spacingSmall,
-                                                  vertical: AppTheme.spacingXSmall,
-                                                ),
+                                            borderRadius: BorderRadius.circular(
+                                              AppTheme.radiusLarge,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.white.withOpacity(
+                                                0.2,
+                                              ),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: IconButton(
+                                            icon: const Icon(
+                                              Icons.arrow_back,
+                                              color: Colors.white,
+                                              size: 28,
+                                            ),
+                                            onPressed: () => context.go('/'),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // Film Info
+                                  Positioned(
+                                    bottom: 40,
+                                    left: 40,
+                                    right: 40,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Title
+                                        Text(
+                                          film.baslik,
+                                          style: isMobile
+                                              ? AppTheme.displaySmall
+                                              : AppTheme.displayLarge,
+                                        ),
+                                        SizedBox(height: AppTheme.spacingSmall),
+                                        // Metadata
+                                        Wrap(
+                                          spacing: AppTheme.spacingSmall,
+                                          runSpacing: AppTheme.spacingXSmall,
+                                          children: [
+                                            if (film.yayinTarihi != null)
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal:
+                                                          AppTheme.spacingSmall,
+                                                      vertical: AppTheme
+                                                          .spacingXSmall,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  gradient: AppTheme.primaryGradient,
-                                                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                                                  color: AppTheme.backgroundCard
+                                                      .withOpacity(0.6),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        AppTheme.radiusSmall,
+                                                      ),
+                                                  border: Border.all(
+                                                    color: AppTheme.primary
+                                                        .withOpacity(0.3),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  film.yayinTarihi!,
+                                                  style: AppTheme.labelMedium,
+                                                ),
+                                              ),
+                                            ...film.turler.map(
+                                              (tur) => Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal:
+                                                          AppTheme.spacingSmall,
+                                                      vertical: AppTheme
+                                                          .spacingXSmall,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  gradient:
+                                                      AppTheme.primaryGradient,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        AppTheme.radiusSmall,
+                                                      ),
                                                 ),
                                                 child: Text(
                                                   tur.baslik,
-                                                  style: AppTheme.labelSmall.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                                  style: AppTheme.labelSmall
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                 ),
-                                              )),
-                                        ],
-                                      ),
-                                      SizedBox(height: AppTheme.spacingLarge),
-                                      // Action Buttons
-                                      Row(
-                                        children: [
-                                          // İzle Button
-                                          Expanded(
-                                            flex: isMobile ? 1 : 0,
-                                            child: _buildActionButton(
-                                              icon: Icons.play_arrow,
-                                              label: 'İzle',
-                                              onTap: () => _handleButtonPress(0),
-                                              isPrimary: true,
-                                              isFocused: _focusedButton == 0,
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(width: AppTheme.spacingSmall),
-                                          // Listeye Ekle Button
-                                          Expanded(
-                                            flex: isMobile ? 1 : 0,
-                                            child: _buildActionButton(
-                                              icon: Icons.add,
-                                              label: 'Listeye Ekle',
-                                              onTap: () => _handleButtonPress(1),
-                                              isPrimary: false,
-                                              isFocused: _focusedButton == 1,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // Film Description
-                            Padding(
-                              padding: EdgeInsets.all(isMobile ? AppTheme.spacingLarge : AppTheme.spacingXLarge),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 4,
-                                        height: 28,
-                                        decoration: BoxDecoration(
-                                          gradient: AppTheme.primaryGradient,
-                                          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                                          ],
                                         ),
-                                      ),
-                                      SizedBox(width: AppTheme.spacingSmall),
-                                      Text(
-                                        'Açıklama',
-                                        style: AppTheme.headlineMedium,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: AppTheme.spacingMedium),
-                                  Container(
-                                    padding: const EdgeInsets.all(AppTheme.spacingLarge),
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.backgroundCard.withOpacity(0.3),
-                                      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                                      border: Border.all(
-                                        color: AppTheme.backgroundMedium,
-                                        width: 1,
-                                      ),
+                                        SizedBox(height: AppTheme.spacingLarge),
+                                        // Action Buttons
+                                        Row(
+                                          children: [
+                                            // İzle Button
+                                            Expanded(
+                                              flex: isMobile ? 1 : 0,
+                                              child: _buildActionButton(
+                                                icon: Icons.play_arrow,
+                                                label: 'İzle',
+                                                onTap: () =>
+                                                    _handleButtonPress(0),
+                                                isPrimary: true,
+                                                isFocused: _focusedButton == 0,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: AppTheme.spacingSmall,
+                                            ),
+                                            // Listeye Ekle Button
+                                            Expanded(
+                                              flex: isMobile ? 1 : 0,
+                                              child: _buildActionButton(
+                                                icon: Icons.add,
+                                                label: 'Listeye Ekle',
+                                                onTap: () =>
+                                                    _handleButtonPress(1),
+                                                isPrimary: false,
+                                                isFocused: _focusedButton == 1,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    child: Text(
-                                      film.detay ?? 'Açıklama bilgisi bulunmuyor.',
-                                      style: AppTheme.bodyLarge,
-                                    ),
                                   ),
-                                  SizedBox(height: AppTheme.spacingXLarge),
-                                  // Similar Films
-                                  if (_similarFilms.isNotEmpty) ...[
+                                ],
+                              ),
+                              // Film Description
+                              Padding(
+                                padding: EdgeInsets.all(
+                                  isMobile
+                                      ? AppTheme.spacingLarge
+                                      : AppTheme.spacingXLarge,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
                                     Row(
                                       children: [
                                         Container(
@@ -478,159 +485,215 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                           height: 28,
                                           decoration: BoxDecoration(
                                             gradient: AppTheme.primaryGradient,
-                                            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                                            borderRadius: BorderRadius.circular(
+                                              AppTheme.radiusSmall,
+                                            ),
                                           ),
                                         ),
                                         SizedBox(width: AppTheme.spacingSmall),
                                         Text(
-                                          'Benzer Filmler',
+                                          'Açıklama',
                                           style: AppTheme.headlineMedium,
                                         ),
                                       ],
                                     ),
                                     SizedBox(height: AppTheme.spacingMedium),
-                                    SizedBox(
-                                      height: 300,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: _similarFilms.length,
-                                        itemBuilder: (context, index) {
-                                          final similarFilm =
-                                              _similarFilms[index];
-                                          final isFocused =
-                                              _focusedButton == 2 &&
-                                              _focusedSimilarFilm == index;
-                                          return Container(
-                                            width: 200,
-                                            margin: const EdgeInsets.only(
-                                              right: 12,
+                                    Container(
+                                      padding: const EdgeInsets.all(
+                                        AppTheme.spacingLarge,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.backgroundCard
+                                            .withOpacity(0.3),
+                                        borderRadius: BorderRadius.circular(
+                                          AppTheme.radiusMedium,
+                                        ),
+                                        border: Border.all(
+                                          color: AppTheme.backgroundMedium,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        film.detay ??
+                                            'Açıklama bilgisi bulunmuyor.',
+                                        style: AppTheme.bodyLarge,
+                                      ),
+                                    ),
+                                    SizedBox(height: AppTheme.spacingXLarge),
+                                    // Similar Films
+                                    if (_similarFilms.isNotEmpty) ...[
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 4,
+                                            height: 28,
+                                            decoration: BoxDecoration(
+                                              gradient:
+                                                  AppTheme.primaryGradient,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    AppTheme.radiusSmall,
+                                                  ),
                                             ),
-                                            child: Transform.scale(
-                                              scale: isFocused ? 1.1 : 1.0,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: isFocused
-                                                      ? Border.all(
-                                                          color: Colors.white,
-                                                          width: 3,
-                                                        )
-                                                      : null,
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                ),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      // Poster
-                                                      AspectRatio(
-                                                        aspectRatio: 2 / 3,
-                                                        child:
-                                                            similarFilm
-                                                                    .poster !=
-                                                                null
-                                                            ? CachedNetworkImage(
-                                                                imageUrl:
-                                                                    similarFilm
-                                                                        .poster!,
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                placeholder:
-                                                                    (
-                                                                      context,
-                                                                      url,
-                                                                    ) => Container(
-                                                                      color: Colors
-                                                                          .grey[800],
-                                                                    ),
-                                                                errorWidget:
-                                                                    (
-                                                                      context,
-                                                                      url,
-                                                                      error,
-                                                                    ) => Container(
-                                                                      color: Colors
-                                                                          .grey[800],
-                                                                      child: const Icon(
-                                                                        Icons
-                                                                            .movie,
-                                                                        color: Colors
-                                                                            .white54,
-                                                                        size:
-                                                                            50,
-                                                                      ),
-                                                                    ),
-                                                              )
-                                                            : Container(
-                                                                color: Colors
-                                                                    .grey[800],
-                                                                child: const Icon(
-                                                                  Icons.movie,
-                                                                  color: Colors
-                                                                      .white54,
-                                                                  size: 50,
-                                                                ),
-                                                              ),
-                                                      ),
-                                                      // Title
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                              8.0,
-                                                            ),
-                                                        child: Text(
-                                                          similarFilm.baslik,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              const TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                              ),
+                                          ),
+                                          SizedBox(
+                                            width: AppTheme.spacingSmall,
+                                          ),
+                                          Text(
+                                            'Benzer Filmler',
+                                            style: AppTheme.headlineMedium,
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: AppTheme.spacingMedium),
+                                      SizedBox(
+                                        height: 300,
+                                        child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount: _similarFilms.length,
+                                          itemBuilder: (context, index) {
+                                            final similarFilm =
+                                                _similarFilms[index];
+                                            final isFocused =
+                                                _focusedButton == 2 &&
+                                                _focusedSimilarFilm == index;
+                                            return Container(
+                                              width: 200,
+                                              margin: const EdgeInsets.only(
+                                                right: 12,
+                                              ),
+                                              child: Transform.scale(
+                                                scale: isFocused ? 1.1 : 1.0,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    border: isFocused
+                                                        ? Border.all(
+                                                            color: Colors.white,
+                                                            width: 3,
+                                                          )
+                                                        : null,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          4,
                                                         ),
-                                                      ),
-                                                    ],
+                                                  ),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          4,
+                                                        ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        // Poster
+                                                        AspectRatio(
+                                                          aspectRatio: 2 / 3,
+                                                          child:
+                                                              similarFilm
+                                                                      .poster !=
+                                                                  null
+                                                              ? CachedNetworkImage(
+                                                                  imageUrl:
+                                                                      similarFilm
+                                                                          .poster!,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  placeholder:
+                                                                      (
+                                                                        context,
+                                                                        url,
+                                                                      ) => Container(
+                                                                        color: Colors
+                                                                            .grey[800],
+                                                                      ),
+                                                                  errorWidget:
+                                                                      (
+                                                                        context,
+                                                                        url,
+                                                                        error,
+                                                                      ) => Container(
+                                                                        color: Colors
+                                                                            .grey[800],
+                                                                        child: const Icon(
+                                                                          Icons
+                                                                              .movie,
+                                                                          color:
+                                                                              Colors.white54,
+                                                                          size:
+                                                                              50,
+                                                                        ),
+                                                                      ),
+                                                                )
+                                                              : Container(
+                                                                  color: Colors
+                                                                      .grey[800],
+                                                                  child: const Icon(
+                                                                    Icons.movie,
+                                                                    color: Colors
+                                                                        .white54,
+                                                                    size: 50,
+                                                                  ),
+                                                                ),
+                                                        ),
+                                                        // Title
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child: Text(
+                                                            similarFilm.baslik,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style:
+                                                                const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        },
+                                            );
+                                          },
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ],
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+          ),
+          // Mobil navbar (altta)
+          bottomNavigationBar: isMobile
+              ? NavBar(
+                  focusedIndex: _navbarFocusedIndex,
+                  onFocusChanged: (index) {
+                    setState(() {
+                      _navbarFocusedIndex = index;
+                      _isNavbarFocused = true;
+                    });
+                  },
+                  isFocused: _isNavbarFocused,
+                )
+              : null,
         ),
-        // Mobil navbar (altta)
-        bottomNavigationBar: isMobile
-            ? NavBar(
-                focusedIndex: _navbarFocusedIndex,
-                onFocusChanged: (index) {
-                  setState(() {
-                    _navbarFocusedIndex = index;
-                    _isNavbarFocused = true;
-                  });
-                },
-                isFocused: _isNavbarFocused,
-              )
-            : null,
       ),
     );
   }

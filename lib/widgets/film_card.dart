@@ -65,13 +65,17 @@ class _FilmCardState extends State<FilmCard>
                 : EdgeInsets.zero,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(
-                widget.isFocused ? AppTheme.radiusMedium - 2 : AppTheme.radiusMedium,
+                widget.isFocused
+                    ? AppTheme.radiusMedium - 2
+                    : AppTheme.radiusMedium,
               ),
               color: AppTheme.backgroundCard,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(
-                widget.isFocused ? AppTheme.radiusMedium - 2 : AppTheme.radiusMedium,
+                widget.isFocused
+                    ? AppTheme.radiusMedium - 2
+                    : AppTheme.radiusMedium,
               ),
               child: AspectRatio(
                 aspectRatio: 2 / 3, // Film poster oranı
@@ -95,7 +99,7 @@ class _FilmCardState extends State<FilmCard>
                             },
                           )
                         : _buildPlaceholder(),
-                    
+
                     // Gradient overlay (bottom)
                     Positioned(
                       bottom: 0,
@@ -115,7 +119,7 @@ class _FilmCardState extends State<FilmCard>
                         ),
                       ),
                     ),
-                    
+
                     // Film title overlay
                     Positioned(
                       bottom: AppTheme.spacingSmall,
@@ -131,12 +135,15 @@ class _FilmCardState extends State<FilmCard>
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    
+
                     // Play button overlay (focused)
                     if (widget.isFocused)
                       Center(
                         child: TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0.0, end: widget.isFocused ? 1.0 : 0.0),
+                          tween: Tween(
+                            begin: 0.0,
+                            end: widget.isFocused ? 1.0 : 0.0,
+                          ),
                           duration: AppTheme.animationMedium,
                           curve: AppTheme.animationBounceCurve,
                           builder: (context, value, child) {

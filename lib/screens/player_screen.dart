@@ -167,6 +167,27 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
       final kaynak = widget.film.kaynaklar![_selectedKaynakIndex];
       debugPrint('🎬 Kaynak alındı: ${kaynak.baslik}');
+      debugPrint('🎬 Kaynak URL: ${kaynak.url}');
+      debugPrint('🎬 isIframe from API: ${kaynak.isIframe}');
+
+      // iframe URL pattern kontrolü (API'den gelmese bile)
+      final urlLower = kaynak.url.toLowerCase();
+      final isIframeUrl =
+          urlLower.contains('iframe') ||
+          urlLower.contains('embed') ||
+          kaynak.isIframe;
+
+      debugPrint('🎬 isIframe (final): $isIframeUrl');
+
+      // Eğer iframe kaynak ise, iframe player'a yönlendir
+      if (isIframeUrl) {
+        debugPrint(
+          '🎬 İframe kaynak tespit edildi, iframe player\'a yönlendiriliyor',
+        );
+        if (!mounted) return;
+        context.go('/iframe-player/${widget.film.id}/${kaynak.id}');
+        return;
+      }
 
       // URL'i kontrol et ve parse et
       String videoUrl = kaynak.url.trim();
@@ -583,7 +604,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     try {
       debugPrint('📥 Alt yazı indiriliyor: $url');
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode != 200) {
         debugPrint('❌ Alt yazı indirilemedi: ${response.statusCode}');
         return [];
@@ -634,12 +655,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         final text = lines.sublist(2).join('\n').trim();
 
         subtitles.add(
-          Subtitle(
-            index: subtitles.length,
-            start: start,
-            end: end,
-            text: text,
-          ),
+          Subtitle(index: subtitles.length, start: start, end: end, text: text),
         );
       }
 
@@ -659,10 +675,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
     });
 
     // Alt yazı yükle (eğer seçilmişse)
-    if (index >= 0 && widget.film.altyazilar != null && index < widget.film.altyazilar!.length) {
+    if (index >= 0 &&
+        widget.film.altyazilar != null &&
+        index < widget.film.altyazilar!.length) {
       final altyaziUrl = widget.film.altyazilar![index].url;
       final subtitles = await _parseSrtFile(altyaziUrl);
-      
+
       if (subtitles.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -685,7 +703,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ Alt yazı: ${widget.film.altyazilar![index].baslik}'),
+            content: Text(
+              '✅ Alt yazı: ${widget.film.altyazilar![index].baslik}',
+            ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -694,7 +714,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     } else {
       // Alt yazı kapatıldı
       setState(() => _currentSubtitles = []);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -706,7 +726,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
       }
     }
 
-    debugPrint('✅ Altyazı değiştirildi: ${index >= 0 ? widget.film.altyazilar![index].baslik : "Yok"}');
+    debugPrint(
+      '✅ Altyazı değiştirildi: ${index >= 0 ? widget.film.altyazilar![index].baslik : "Yok"}',
+    );
   }
 
   // Oynatma hızı menüsü
@@ -885,183 +907,240 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardListener(
-      focusNode: FocusNode()..requestFocus(),
-      onKeyEvent: _handleKeyEvent,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.red))
-            : _hasError
-            ? Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _errorMessage,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+    return PopScope(
+      canPop: true,
+      child: KeyboardListener(
+        focusNode: FocusNode()..requestFocus(),
+        onKeyEvent: _handleKeyEvent,
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          body: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: Colors.red),
+                )
+              : _hasError
+              ? Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.red,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      // Debug bilgileri
-                      if (widget.film.kaynaklar != null &&
-                          widget.film.kaynaklar!.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[900],
-                            borderRadius: BorderRadius.circular(8),
+                        const SizedBox(height: 16),
+                        Text(
+                          _errorMessage,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                '🔍 Debug Bilgileri:',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Film: ${widget.film.baslik}',
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Kaynak Sayısı: ${widget.film.kaynaklar!.length}',
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Seçili Kaynak: ${widget.film.kaynaklar![_selectedKaynakIndex].baslik}',
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'URL: ${widget.film.kaynaklar![_selectedKaynakIndex].url}',
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Format: ${_getVideoFormat(widget.film.kaynaklar![_selectedKaynakIndex].url)}',
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                            ],
-                          ),
+                          textAlign: TextAlign.center,
                         ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                _hasError = false;
-                                _isLoading = true;
-                              });
-                              _initializePlayer();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
+                        const SizedBox(height: 24),
+                        // Debug bilgileri
+                        if (widget.film.kaynaklar != null &&
+                            widget.film.kaynaklar!.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Tekrar Dene'),
-                          ),
-                          const SizedBox(width: 16),
-                          ElevatedButton.icon(
-                            onPressed: () => context.go('/'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  '🔍 Debug Bilgileri:',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Film: ${widget.film.baslik}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Kaynak Sayısı: ${widget.film.kaynaklar!.length}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Seçili Kaynak: ${widget.film.kaynaklar![_selectedKaynakIndex].baslik}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'URL: ${widget.film.kaynaklar![_selectedKaynakIndex].url}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Format: ${_getVideoFormat(widget.film.kaynaklar![_selectedKaynakIndex].url)}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                              ],
                             ),
-                            icon: const Icon(Icons.home),
-                            label: const Text('Ana Sayfa'),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : Center(
-                child: _chewieController != null
-                    ? GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showControls = !_showControls;
-                          });
-                          if (_showControls) {
-                            _resetHideTimer();
-                          } else {
-                            _hideTimer?.cancel();
-                          }
-                        },
-                        child: Stack(
-                          children: [
-                            // Video player
-                            Chewie(controller: _chewieController!),
+                        const SizedBox(height: 24),
+                        // Kaynak seçimi (birden fazla kaynak varsa)
+                        if (widget.film.kaynaklar != null &&
+                            widget.film.kaynaklar!.length > 1) ...[
+                          const Text(
+                            'Diğer Kaynakları Deneyin:',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: List.generate(
+                              widget.film.kaynaklar!.length,
+                              (index) {
+                                final kaynak = widget.film.kaynaklar![index];
+                                final isSelected =
+                                    index == _selectedKaynakIndex;
+                                final isCurrent = index == _selectedKaynakIndex;
 
-                            // Alt yazı gösterimi
-                            if (_currentSubtitleText.isNotEmpty)
-                              Positioned(
-                                bottom: 100,
-                                left: 0,
-                                right: 0,
-                                child: Center(
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 40),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 8,
+                                return ElevatedButton(
+                                  onPressed: isCurrent
+                                      ? null
+                                      : () {
+                                          _changeKaynak(index);
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isSelected
+                                        ? Colors.grey[700]
+                                        : Colors.grey[800],
+                                    disabledBackgroundColor: Colors.grey[700],
+                                  ),
+                                  child: Text(
+                                    kaynak.baslik,
+                                    style: TextStyle(
+                                      color: isCurrent
+                                          ? Colors.red
+                                          : Colors.white,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.85),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      _currentSubtitleText,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.4,
-                                        shadows: [
-                                          Shadow(
-                                            offset: Offset(1.5, 1.5),
-                                            blurRadius: 3,
-                                            color: Colors.black,
-                                          ),
-                                        ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  _hasError = false;
+                                  _isLoading = true;
+                                });
+                                _initializePlayer();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                              ),
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Tekrar Dene'),
+                            ),
+                            const SizedBox(width: 16),
+                            ElevatedButton.icon(
+                              onPressed: () => context.go('/'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              icon: const Icon(Icons.home),
+                              label: const Text('Ana Sayfa'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Center(
+                  child: _chewieController != null
+                      ? GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showControls = !_showControls;
+                            });
+                            if (_showControls) {
+                              _resetHideTimer();
+                            } else {
+                              _hideTimer?.cancel();
+                            }
+                          },
+                          child: Stack(
+                            children: [
+                              // Video player
+                              Chewie(controller: _chewieController!),
+
+                              // Alt yazı gösterimi
+                              if (_currentSubtitleText.isNotEmpty)
+                                Positioned(
+                                  bottom: 100,
+                                  left: 0,
+                                  right: 0,
+                                  child: Center(
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 40,
                                       ),
-                                      textAlign: TextAlign.center,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.85),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        _currentSubtitleText,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.4,
+                                          shadows: [
+                                            Shadow(
+                                              offset: Offset(1.5, 1.5),
+                                              blurRadius: 3,
+                                              color: Colors.black,
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
 
-                            // Custom overlay kontroller
-                            if (_showControls) _buildCustomControls(),
-                          ],
-                        ),
-                      )
-                    : const CircularProgressIndicator(color: Colors.red),
-              ),
+                              // Custom overlay kontroller
+                              if (_showControls) _buildCustomControls(),
+                            ],
+                          ),
+                        )
+                      : const CircularProgressIndicator(color: Colors.red),
+                ),
+        ),
       ),
     );
   }
@@ -1190,10 +1269,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
                 Text(
                   _formatDuration(duration),
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -1224,8 +1300,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 isFocused: isFocused && _focusedButton == 2,
                 onPressed: () {
                   if (controller != null && controller.value.isInitialized) {
-                    final newPos = controller.value.position - const Duration(seconds: 10);
-                    controller.seekTo(newPos < Duration.zero ? Duration.zero : newPos);
+                    final newPos =
+                        controller.value.position - const Duration(seconds: 10);
+                    controller.seekTo(
+                      newPos < Duration.zero ? Duration.zero : newPos,
+                    );
                   }
                 },
               ),
@@ -1255,7 +1334,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 isFocused: isFocused && _focusedButton == 1,
                 onPressed: () {
                   if (controller != null && controller.value.isInitialized) {
-                    final newPos = controller.value.position + const Duration(seconds: 10);
+                    final newPos =
+                        controller.value.position + const Duration(seconds: 10);
                     final duration = controller.value.duration;
                     controller.seekTo(newPos > duration ? duration : newPos);
                   }
@@ -1271,7 +1351,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
               // Kaynak seçimi
               _buildSmallControlButton(
                 icon: Icons.video_library,
-                label: widget.film.kaynaklar != null && widget.film.kaynaklar!.isNotEmpty
+                label:
+                    widget.film.kaynaklar != null &&
+                        widget.film.kaynaklar!.isNotEmpty
                     ? widget.film.kaynaklar![_selectedKaynakIndex].baslik
                     : 'Kaynak',
                 isFocused: isFocused && _focusedButton == 3,
@@ -1283,9 +1365,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 label: _selectedAltyaziIndex == -1
                     ? 'Altyazı'
                     : (widget.film.altyazilar != null &&
-                            _selectedAltyaziIndex < widget.film.altyazilar!.length)
-                        ? widget.film.altyazilar![_selectedAltyaziIndex].baslik
-                        : 'Altyazı',
+                          _selectedAltyaziIndex <
+                              widget.film.altyazilar!.length)
+                    ? widget.film.altyazilar![_selectedAltyaziIndex].baslik
+                    : 'Altyazı',
                 isFocused: isFocused && _focusedButton == 4,
                 onPressed: _showAltyaziMenu,
               ),
@@ -1370,18 +1453,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
         decoration: BoxDecoration(
           color: isFocused ? Colors.red : Colors.black54,
           borderRadius: BorderRadius.circular(8),
-          border: isFocused
-              ? Border.all(color: Colors.white, width: 2)
-              : null,
+          border: isFocused ? Border.all(color: Colors.white, width: 2) : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
+            Icon(icon, color: Colors.white, size: 20),
             const SizedBox(width: 8),
             Text(
               label,

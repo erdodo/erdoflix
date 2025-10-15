@@ -499,9 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       height: isMobile ? 400 : 550,
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
-      ),
+      decoration: const BoxDecoration(color: AppTheme.background),
       child: Stack(
         children: [
           // Arka plan görseli
@@ -518,9 +516,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Gradient overlay (Netflix tarzı)
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: AppTheme.heroGradient,
-              ),
+              decoration: BoxDecoration(gradient: AppTheme.heroGradient),
             ),
           ),
           // Film bilgileri ile glassmorphism card
@@ -533,7 +529,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                 child: Container(
-                  padding: EdgeInsets.all(isMobile ? AppTheme.spacingMedium : AppTheme.spacingLarge),
+                  padding: EdgeInsets.all(
+                    isMobile ? AppTheme.spacingMedium : AppTheme.spacingLarge,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -555,7 +553,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         heroFilm.baslik,
-                        style: isMobile 
+                        style: isMobile
                             ? AppTheme.headlineLarge
                             : AppTheme.displayMedium,
                         maxLines: 2,
@@ -578,7 +576,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: Icons.play_arrow,
                               label: 'İzle',
                               isPrimary: true,
-                              isFocused: _focusedRow == -1 && _heroBannerFocusedButton == 0,
+                              isFocused:
+                                  _focusedRow == -1 &&
+                                  _heroBannerFocusedButton == 0,
                             ),
                           ),
                           SizedBox(width: AppTheme.spacingSmall),
@@ -589,7 +589,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: Icons.info_outline,
                               label: 'Detaylar',
                               isPrimary: false,
-                              isFocused: _focusedRow == -1 && _heroBannerFocusedButton == 1,
+                              isFocused:
+                                  _focusedRow == -1 &&
+                                  _heroBannerFocusedButton == 1,
                             ),
                           ),
                         ],
@@ -659,22 +661,21 @@ class _HomeScreenState extends State<HomeScreen> {
             horizontal: AppTheme.spacingMedium,
             vertical: AppTheme.spacingSmall,
           ),
-          child: Text(
-            'Kategoriler',
-            style: AppTheme.headlineMedium,
-          ),
+          child: Text('Kategoriler', style: AppTheme.headlineMedium),
         ),
         SizedBox(
           height: 52,
           child: ListView.builder(
             key: _categoryKey,
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacingMedium,
+            ),
             itemCount: _turler.length,
             itemBuilder: (context, index) {
               final tur = _turler[index];
               final isFocused = _focusedRow == -2 && _focusedColumn == index;
-              
+
               return TweenAnimationBuilder<double>(
                 duration: AppTheme.animationMedium,
                 curve: AppTheme.animationCurve,
@@ -683,7 +684,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Transform.scale(
                     scale: scale,
                     child: Container(
-                      margin: const EdgeInsets.only(right: AppTheme.spacingSmall),
+                      margin: const EdgeInsets.only(
+                        right: AppTheme.spacingSmall,
+                      ),
                       child: AnimatedContainer(
                         duration: AppTheme.animationMedium,
                         decoration: BoxDecoration(
@@ -695,7 +698,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     AppTheme.backgroundMedium,
                                   ],
                                 ),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusLarge,
+                          ),
                           border: Border.all(
                             color: isFocused
                                 ? AppTheme.primary.withOpacity(0.5)
@@ -708,7 +713,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.transparent,
                           child: InkWell(
                             onTap: () => context.go('/category/${tur.id}'),
-                            borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                            borderRadius: BorderRadius.circular(
+                              AppTheme.radiusLarge,
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: AppTheme.spacingLarge,
@@ -718,7 +725,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   tur.baslik,
                                   style: isFocused
-                                      ? AppTheme.labelLarge.copyWith(fontWeight: FontWeight.bold)
+                                      ? AppTheme.labelLarge.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        )
                                       : AppTheme.labelMedium,
                                 ),
                               ),

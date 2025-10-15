@@ -128,10 +128,7 @@ class _FilmRowState extends State<FilmRow> {
                 ),
               ),
               const SizedBox(width: AppTheme.spacingSmall),
-              Text(
-                widget.title,
-                style: AppTheme.headlineMedium,
-              ),
+              Text(widget.title, style: AppTheme.headlineMedium),
             ],
           ),
         ),

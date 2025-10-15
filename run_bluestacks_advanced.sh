@@ -33,7 +33,7 @@ connect_adb() {
     echo "🔌 BlueStacks'e bağlanılıyor (port: $port)..."
     adb connect localhost:$port > /dev/null 2>&1
     sleep 2
-    
+
     # Bağlantıyı kontrol et
     if adb devices | grep "localhost:$port" | grep -q "device"; then
         echo -e "${GREEN}✅ ADB bağlantısı başarılı (localhost:$port)${NC}"
@@ -54,11 +54,11 @@ if ! check_bluestacks; then
         echo "🔄 BlueStacks başlatılıyor..."
         # macOS için BlueStacks başlatma
         open -a "BlueStacks" 2>/dev/null || open -a "BlueStacks.app" 2>/dev/null
-        
+
         if [ $? -eq 0 ]; then
             echo -e "${BLUE}⏳ BlueStacks başlatılıyor, lütfen bekleyin...${NC}"
             sleep 10
-            
+
             # Başlatıldığını kontrol et
             for i in {1..30}; do
                 if check_bluestacks; then

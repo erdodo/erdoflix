@@ -6,17 +6,13 @@ import '../models/resume_play.dart';
 class ResumePlayService {
   static const String baseUrl = 'https://app.erdoganyesil.org/api';
   static const String apiKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGVOYW1lIjoicm9vdCIsImlhdCI6MTc2MDQ1NjI4NiwiZXhwIjozMzMxODA1NjI4Nn0.ikmX73jTYj73phAL-ZYf-HcslWjVVoNNzfPtoddvj_4';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGVOYW1lIjoicm9vdCIsImlhdCI6MTc2MDU1NTA3NCwiZXhwIjozMzMxODE1NTA3NH0.y2tm073r0qumlsrfrnBDsgLzGeVvMAXDFyNQEs5oXm0';
 
   static Map<String, String> _getHeaders() {
     return {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $apiKey',
-      'X-Role': 'root',
-      'X-App': 'erdoFlix',
-      'X-Authenticator': 'basic',
-      'X-Locale': 'tr-TR',
-      'X-Timezone': '+03:00',
+      'accept': 'application/json',
     };
   }
 

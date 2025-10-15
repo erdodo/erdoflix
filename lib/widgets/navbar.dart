@@ -25,7 +25,7 @@ class _NavBarState extends State<NavBar> {
     NavItem(icon: Icons.home, label: 'Anasayfa', route: '/'),
     NavItem(icon: Icons.movie, label: 'Filmler', route: '/'),
     NavItem(icon: Icons.tv, label: 'Diziler', route: '/'),
-    NavItem(icon: Icons.search, label: 'Arama', route: '/'),
+    NavItem(icon: Icons.search, label: 'Arama', route: '/search'),
     NavItem(icon: Icons.person, label: 'Profil', route: '/'),
   ];
 
@@ -75,7 +75,9 @@ class _NavBarState extends State<NavBar> {
             right: true,
             child: Container(
               height: 75,
-              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingSmall),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingSmall,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(_navItems.length, (index) {
@@ -178,18 +180,13 @@ class _NavBarState extends State<NavBar> {
                     ? LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          AppTheme.primary,
-                          AppTheme.primaryLight,
-                        ],
+                        colors: [AppTheme.primary, AppTheme.primaryLight],
                       )
                     : null,
                 color: isSelected ? null : Colors.transparent,
                 borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                 border: Border.all(
-                  color: isSelected 
-                      ? AppTheme.primary 
-                      : Colors.transparent,
+                  color: isSelected ? AppTheme.primary : Colors.transparent,
                   width: 2,
                 ),
                 boxShadow: isSelected ? AppTheme.glowShadow : null,
@@ -213,8 +210,8 @@ class _NavBarState extends State<NavBar> {
                       color: isSelected
                           ? AppTheme.textPrimary
                           : AppTheme.textSecondary,
-                      fontWeight: isSelected 
-                          ? FontWeight.w700 
+                      fontWeight: isSelected
+                          ? FontWeight.w700
                           : FontWeight.w500,
                       fontSize: 10,
                     ),

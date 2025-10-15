@@ -151,19 +151,201 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 800;
 
-    return RawKeyboardListener(
-      focusNode: FocusNode()..requestFocus(),
-      onKey: (event) => _handleKeyEvent(event),
-      child: Scaffold(
-        backgroundColor: AppTheme.background,
-        body: SafeArea(
-          top: true,
-          bottom: false,
-          child: Row(
-            children: [
-              // Desktop navbar (solda)
-              if (!isMobile)
-                NavBar(
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          context.go('/');
+        }
+      },
+      child: RawKeyboardListener(
+        focusNode: FocusNode()..requestFocus(),
+        onKey: (event) => _handleKeyEvent(event),
+        child: Scaffold(
+          backgroundColor: AppTheme.background,
+          body: SafeArea(
+            top: true,
+            bottom: false,
+            child: Row(
+              children: [
+                // Desktop navbar (solda)
+                if (!isMobile)
+                  NavBar(
+                    focusedIndex: _navbarFocusedIndex,
+                    onFocusChanged: (index) {
+                      setState(() {
+                        _navbarFocusedIndex = index;
+                        _isNavbarFocused = true;
+                      });
+                    },
+                    isFocused: _isNavbarFocused,
+                  ),
+                // Ana içerik
+                Expanded(
+                  child: Column(
+                    children: [
+                      // Üst başlık
+                      Container(
+                        padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              AppTheme.background,
+                              AppTheme.background.withOpacity(0.0),
+                            ],
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusLarge,
+                              ),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 10,
+                                  sigmaY: 10,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.backgroundCard.withOpacity(
+                                      0.5,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      AppTheme.radiusLarge,
+                                    ),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.1),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.arrow_back,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                    onPressed: () => context.go('/'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: AppTheme.spacingMedium),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppTheme.spacingLarge,
+                                vertical: AppTheme.spacingSmall,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.primaryGradient,
+                                borderRadius: BorderRadius.circular(
+                                  AppTheme.radiusLarge,
+                                ),
+                                boxShadow: AppTheme.glowShadow,
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.category,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                  SizedBox(width: AppTheme.spacingSmall),
+                                  Text(
+                                    widget.tur.baslik,
+                                    style: AppTheme.headlineMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Film grid
+                      Expanded(
+                        child: _isLoading && _films.isEmpty
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppTheme.primary,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : _films.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.movie_filter,
+                                      size: 80,
+                                      color: AppTheme.textTertiary,
+                                    ),
+                                    SizedBox(height: AppTheme.spacingMedium),
+                                    Text(
+                                      'Bu kategoride film bulunamadı',
+                                      style: AppTheme.bodyLarge,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : SingleChildScrollView(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Grid layout
+                                    LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        return Wrap(
+                                          spacing: 12,
+                                          runSpacing: 12,
+                                          children: List.generate(
+                                            _films.length,
+                                            (index) {
+                                              final isFocused =
+                                                  _focusedIndex == index;
+                                              return SizedBox(
+                                                width: 200,
+                                                child: FilmCard(
+                                                  film: _films[index],
+                                                  isFocused: isFocused,
+                                                  onTap: () =>
+                                                      _onFilmTap(_films[index]),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    // Loading indicator for more items
+                                    if (_isLoading && _films.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.all(
+                                          AppTheme.spacingLarge,
+                                        ),
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            color: AppTheme.primary,
+                                            strokeWidth: 3,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Mobil navbar (altta)
+          bottomNavigationBar: isMobile
+              ? NavBar(
                   focusedIndex: _navbarFocusedIndex,
                   onFocusChanged: (index) {
                     setState(() {
@@ -172,169 +354,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     });
                   },
                   isFocused: _isNavbarFocused,
-                ),
-              // Ana içerik
-              Expanded(
-                child: Column(
-                  children: [
-                    // Üst başlık
-                    Container(
-                      padding: const EdgeInsets.all(AppTheme.spacingLarge),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            AppTheme.background,
-                            AppTheme.background.withOpacity(0.0),
-                          ],
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: AppTheme.backgroundCard.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.arrow_back,
-                                    color: Colors.white,
-                                    size: 24,
-                                  ),
-                                  onPressed: () => context.go('/'),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: AppTheme.spacingMedium),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppTheme.spacingLarge,
-                              vertical: AppTheme.spacingSmall,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: AppTheme.primaryGradient,
-                              borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
-                              boxShadow: AppTheme.glowShadow,
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.category,
-                                  color: Colors.white,
-                                  size: 24,
-                                ),
-                                SizedBox(width: AppTheme.spacingSmall),
-                                Text(
-                                  widget.tur.baslik,
-                                  style: AppTheme.headlineMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Film grid
-                    Expanded(
-                      child: _isLoading && _films.isEmpty
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: AppTheme.primary,
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : _films.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.movie_filter,
-                                    size: 80,
-                                    color: AppTheme.textTertiary,
-                                  ),
-                                  SizedBox(height: AppTheme.spacingMedium),
-                                  Text(
-                                    'Bu kategoride film bulunamadı',
-                                    style: AppTheme.bodyLarge,
-                                  ),
-                                ],
-                              ),
-                            )
-                          : SingleChildScrollView(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Grid layout
-                                  LayoutBuilder(
-                                    builder: (context, constraints) {
-                                      return Wrap(
-                                        spacing: 12,
-                                        runSpacing: 12,
-                                        children: List.generate(_films.length, (
-                                          index,
-                                        ) {
-                                          final isFocused =
-                                              _focusedIndex == index;
-                                          return SizedBox(
-                                            width: 200,
-                                            child: FilmCard(
-                                              film: _films[index],
-                                              isFocused: isFocused,
-                                              onTap: () =>
-                                                  _onFilmTap(_films[index]),
-                                            ),
-                                          );
-                                        }),
-                                      );
-                                    },
-                                  ),
-                                  // Loading indicator for more items
-                                  if (_isLoading && _films.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.all(AppTheme.spacingLarge),
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          color: AppTheme.primary,
-                                          strokeWidth: 3,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+                )
+              : null,
         ),
-        // Mobil navbar (altta)
-        bottomNavigationBar: isMobile
-            ? NavBar(
-                focusedIndex: _navbarFocusedIndex,
-                onFocusChanged: (index) {
-                  setState(() {
-                    _navbarFocusedIndex = index;
-                    _isNavbarFocused = true;
-                  });
-                },
-                isFocused: _isNavbarFocused,
-              )
-            : null,
       ),
     );
   }

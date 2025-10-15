@@ -4,8 +4,10 @@ import '../models/film.dart';
 
 class ApiService {
   static const String baseUrl = 'https://app.erdoganyesil.org';
+  // Token updated: 15 Ekim 2025
+  // Expires: 18 Ekim 2025 (3 gün geçerli)
   static const String apiToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInRlbXAiOnRydWUsImlhdCI6MTc2MDQ1NjAyNiwic2lnbkluVGltZSI6MTc2MDQ1NjAyNjM0MiwiZXhwIjoxNzYwNzE1MjI2LCJqdGkiOiIxMzgwNGIwNy00MzIyLTRiNzAtOTRiNC0yYWVlN2EyY2RhN2MifQ.JUhj1jllAOxx_IFOr0bQXo0qZvg7n8nIFhhlexB8kZo';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInRlbXAiOnRydWUsImlhdCI6MTc2MDU1NDg3Miwic2lnbkluVGltZSI6MTc2MDU1NDg3MjE4NSwiZXhwIjoxNzYwODE0MDcyLCJqdGkiOiIwYzExYTJlNC03NjQ0LTQ4MjUtYjU0NC1kN2JmNmRhMWM5MjUifQ.DMKZ8cWtBC1zCebB13zmu9G6krXb3Dq0fZT3CtwxAcs';
 
   Map<String, String> get _headers => {
     'accept': 'application/json',
@@ -20,9 +22,20 @@ class ApiService {
 
   Future<List<Film>> getFilmler({int page = 1, int pageSize = 20}) async {
     try {
+      // Filter: Sadece kaynağı olan filmler
+      final filter = jsonEncode({
+        "\$and": [
+          {
+            "kaynaklar_id": {
+              "id": {"\$notEmpty": true},
+            },
+          },
+        ],
+      });
+
       final response = await http.get(
         Uri.parse(
-          '$baseUrl/api/filmler:list?filter=%7B%7D&page=$page&pageSize=$pageSize',
+          '$baseUrl/api/filmler:list?filter=$filter&page=$page&pageSize=$pageSize',
         ),
         headers: _headers,
       );
@@ -32,7 +45,18 @@ class ApiService {
         final List<dynamic> filmlerData = data['data'] ?? [];
         return filmlerData.map((json) => Film.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to load films');
+        print('❌ API Error: Status ${response.statusCode}');
+        print('❌ Response: ${response.body}');
+        if (response.statusCode == 401) {
+          print('🔑 TOKEN EXPIRED! API token süresi dolmuş.');
+          print(
+            '🔑 Yeni token için: https://app.erdoganyesil.org adresine giriş yapın',
+          );
+          print(
+            '🔑 Token\'ı lib/services/api_service.dart dosyasına yapıştırın',
+          );
+        }
+        throw Exception('Failed to load films: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching films: $e');
@@ -45,9 +69,20 @@ class ApiService {
     int pageSize = 20,
   }) async {
     try {
+      // Filter: Sadece kaynağı olan filmler
+      final filter = jsonEncode({
+        "\$and": [
+          {
+            "kaynaklar_id": {
+              "id": {"\$notEmpty": true},
+            },
+          },
+        ],
+      });
+
       final response = await http.get(
         Uri.parse(
-          '$baseUrl/api/filmler:list?filter=%7B%7D&page=$page&pageSize=$pageSize',
+          '$baseUrl/api/filmler:list?filter=$filter&page=$page&pageSize=$pageSize',
         ),
         headers: _headers,
       );
@@ -203,6 +238,71 @@ class ApiService {
     } catch (e) {
       print('❌ Error fetching film with details: $e');
       return null;
+    }
+  }
+
+  /// Filmleri arama (başlık, detay ve orijinal başlıkta arama)
+  Future<List<Film>> searchFilms(
+    String query, {
+    int page = 1,
+    int pageSize = 20,
+  }) async {
+    if (query.trim().isEmpty) {
+      return [];
+    }
+
+    try {
+      // Filter: AND (sadece kaynağı olanlar) + OR (arama kriterleri)
+      final filter = {
+        '\$and': [
+          {
+            'kaynaklar_id': {
+              'id': {'\$notEmpty': true},
+            },
+          },
+          {
+            '\$or': [
+              {
+                'baslik': {'\$includes': query},
+              },
+              {
+                'detay': {'\$includes': query},
+              },
+              {
+                'orjinal_baslik': {'\$includes': query},
+              },
+            ],
+          },
+        ],
+      };
+
+      final filterParam = Uri.encodeComponent(json.encode(filter));
+
+      print('🔍 Search Query: $query');
+      print('🔍 Filter: ${json.encode(filter)}');
+
+      final response = await http.get(
+        Uri.parse(
+          '$baseUrl/api/filmler:list?filter=$filterParam&page=$page&pageSize=$pageSize',
+        ),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> filmlerData = data['data'] ?? [];
+
+        print('🔍 Search Results: ${filmlerData.length} films found');
+
+        return filmlerData.map((json) => Film.fromJson(json)).toList();
+      } else {
+        print('❌ Search Error: Status ${response.statusCode}');
+        print('❌ Response: ${response.body}');
+        throw Exception('Failed to search films: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error searching films: $e');
+      return [];
     }
   }
 }

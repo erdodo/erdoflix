@@ -55,6 +55,9 @@ dependencies:
   # Klavye kontrolü için
   flutter_hooks: ^0.20.5
 
+  # WebView (iframe player için)
+  webview_flutter: ^4.10.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
