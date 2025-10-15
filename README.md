@@ -32,6 +32,10 @@
 - 📄 **Film Detay**: Kapsamlı film bilgileri ve benzer filmler
 - 🔗 **API Entegrasyonu**: NocoBase backend ile senkronizasyon
 - ⚡ **Performans**: Cache, lazy loading, optimize edilmiş rendering
+- 🎬 **Iframe Player**: Gelişmiş medya API yakalama ve otomatik yönlendirme
+- 🔄 **Asenkron Kaynak Toplama**: Background'da iframe kaynakları toplanır ve veritabanına kaydedilir
+- 📦 **Smart Caching**: Kaynaklar önceden toplanıp önbelleklenir, hızlı oynatma
+- 🎯 **12-Layer Detection**: CDN, hash path, encrypted query ile akıllı medya tespiti
 
 ### Phase 2 ⏳ (Planlanan)
 
@@ -172,6 +176,8 @@ erdoflix/
 - [API Dokümantasyonu](API_DOCUMENTATION.md) - Backend API referansı
 - [Kullanıcı Kılavuzu](USER_GUIDE.md) - Son kullanıcı rehberi
 - [Test Raporu](TEST_REPORT.md) - Kapsamlı test sonuçları
+- [Iframe Player Dokümantasyonu](IFRAME_PLAYER_DOCS.md) - Medya yakalama sistemi
+- [Iframe Player İyileştirmeleri](IFRAME_IMPROVEMENTS.md) - Son güncellemeler (16 Ekim 2025)
 - [Roadmap](roadmap/yapilacaklar.md) - Özellik planlaması
 - [Bug Tracker](roadmap/hatalar.md) - Hata takibi (24 bug düzeltildi ✅)
 

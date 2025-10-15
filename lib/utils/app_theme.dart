@@ -23,6 +23,7 @@ class AppTheme {
   static const Color accentBlue = Color(0xFF0080FF);
   static const Color accentGreen = Color(0xFF00C853);
   static const Color accentPurple = Color(0xFF9C27B0);
+  static const Color success = Color(0xFF00C853); // Başarı yeşili
 
   // Gradient'ler
   static const LinearGradient primaryGradient = LinearGradient(
@@ -114,6 +115,13 @@ class AppTheme {
   static const TextStyle headlineLarge = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w700,
+    color: textPrimary,
+    height: 1.4,
+  );
+
+  static const TextStyle headingMedium = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
     color: textPrimary,
     height: 1.4,
   );

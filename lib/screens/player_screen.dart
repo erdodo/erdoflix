@@ -603,14 +603,154 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Future<List<Subtitle>> _parseSrtFile(String url) async {
     try {
       debugPrint('📥 Alt yazı indiriliyor: $url');
+
+      // Format tespiti için URL kontrolü
+      final urlLower = url.toLowerCase();
+      final isVtt = urlLower.contains('.vtt');
+      final isSrt = urlLower.contains('.srt');
+
+      debugPrint(
+        '🎬 Format: ${isVtt
+            ? "VTT"
+            : isSrt
+            ? "SRT"
+            : "UNKNOWN"}',
+      );
+
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode != 200) {
-        debugPrint('❌ Alt yazı indirilemedi: ${response.statusCode}');
+        debugPrint('❌ Alt yazı indirilemedi: HTTP ${response.statusCode}');
+        debugPrint('❌ URL: $url');
         return [];
       }
 
+      debugPrint('✅ Alt yazı indirildi: ${response.body.length} byte');
+
+      // İçerik kontrolü
       final content = response.body;
+      if (content.isEmpty) {
+        debugPrint('❌ Alt yazı içeriği boş');
+        return [];
+      }
+
+      // Format tespiti (içerikten)
+      final contentHasWebVtt = content.trim().startsWith('WEBVTT');
+      final isVttFormat = isVtt || contentHasWebVtt;
+
+      debugPrint('🎬 İçerik format: ${isVttFormat ? "VTT" : "SRT"}');
+
+      if (isVttFormat) {
+        return _parseVttContent(content);
+      } else {
+        return _parseSrtContent(content);
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❌ Alt yazı parse hatası: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
+      return [];
+    }
+  }
+
+  // VTT Parser
+  List<Subtitle> _parseVttContent(String content) {
+    try {
+      final subtitles = <Subtitle>[];
+
+      // WEBVTT başlığını ve metadata'yı atla
+      var lines = content.split('\n');
+      var startIndex = 0;
+
+      // WEBVTT ve metadata satırlarını atla
+      for (var i = 0; i < lines.length; i++) {
+        final line = lines[i].trim();
+        if (line.isEmpty && i > 0) {
+          startIndex = i + 1;
+          break;
+        }
+      }
+
+      // Bloklara ayır (çift newline ile)
+      final contentWithoutHeader = lines.sublist(startIndex).join('\n');
+      final blocks = contentWithoutHeader.split(RegExp(r'\n\s*\n'));
+
+      for (var block in blocks) {
+        final blockLines = block.trim().split('\n');
+        if (blockLines.isEmpty) continue;
+
+        // VTT formatında timestamp satırını bul
+        String? timelineLine;
+        int textStartIndex = 0;
+
+        for (var i = 0; i < blockLines.length; i++) {
+          if (blockLines[i].contains('-->')) {
+            timelineLine = blockLines[i];
+            textStartIndex = i + 1;
+            break;
+          }
+        }
+
+        if (timelineLine == null || textStartIndex >= blockLines.length)
+          continue;
+
+        // VTT zaman formatı: 00:00:10.500 --> 00:00:13.000
+        final timeMatch = RegExp(
+          r'(\d{2}):(\d{2}):(\d{2})[\.,](\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})[\.,](\d{3})',
+        ).firstMatch(timelineLine);
+
+        if (timeMatch == null) continue;
+
+        final startHour = int.parse(timeMatch.group(1)!);
+        final startMin = int.parse(timeMatch.group(2)!);
+        final startSec = int.parse(timeMatch.group(3)!);
+        final startMs = int.parse(timeMatch.group(4)!);
+
+        final endHour = int.parse(timeMatch.group(5)!);
+        final endMin = int.parse(timeMatch.group(6)!);
+        final endSec = int.parse(timeMatch.group(7)!);
+        final endMs = int.parse(timeMatch.group(8)!);
+
+        final start = Duration(
+          hours: startHour,
+          minutes: startMin,
+          seconds: startSec,
+          milliseconds: startMs,
+        );
+
+        final end = Duration(
+          hours: endHour,
+          minutes: endMin,
+          seconds: endSec,
+          milliseconds: endMs,
+        );
+
+        // Metni al (VTT tag'lerini temizle)
+        var text = blockLines.sublist(textStartIndex).join('\n').trim();
+        text = _cleanVttTags(text);
+
+        if (text.isNotEmpty) {
+          subtitles.add(
+            Subtitle(
+              index: subtitles.length,
+              start: start,
+              end: end,
+              text: text,
+            ),
+          );
+        }
+      }
+
+      debugPrint('✅ ${subtitles.length} VTT alt yazı parse edildi');
+      return subtitles;
+    } catch (e) {
+      debugPrint('❌ VTT parse hatası: $e');
+      return [];
+    }
+  }
+
+  // SRT Parser
+  List<Subtitle> _parseSrtContent(String content) {
+    try {
       final subtitles = <Subtitle>[];
       final blocks = content.split('\n\n');
 
@@ -654,17 +794,38 @@ class _PlayerScreenState extends State<PlayerScreen> {
         // Kalan satırlar metin
         final text = lines.sublist(2).join('\n').trim();
 
-        subtitles.add(
-          Subtitle(index: subtitles.length, start: start, end: end, text: text),
-        );
+        if (text.isNotEmpty) {
+          subtitles.add(
+            Subtitle(
+              index: subtitles.length,
+              start: start,
+              end: end,
+              text: text,
+            ),
+          );
+        }
       }
 
-      debugPrint('✅ ${subtitles.length} alt yazı parse edildi');
+      debugPrint('✅ ${subtitles.length} SRT alt yazı parse edildi');
       return subtitles;
     } catch (e) {
-      debugPrint('❌ Alt yazı parse hatası: $e');
+      debugPrint('❌ SRT parse hatası: $e');
       return [];
     }
+  }
+
+  // VTT tag'lerini temizle
+  String _cleanVttTags(String text) {
+    // <c>, <v>, <i>, <b>, <u> gibi VTT tag'lerini kaldır
+    var cleaned = text.replaceAll(RegExp(r'<[^>]+>'), '');
+    // &nbsp;, &amp; gibi HTML entity'leri temizle
+    cleaned = cleaned
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"');
+    return cleaned.trim();
   }
 
   // Altyazı değiştir
@@ -678,16 +839,46 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (index >= 0 &&
         widget.film.altyazilar != null &&
         index < widget.film.altyazilar!.length) {
-      final altyaziUrl = widget.film.altyazilar![index].url;
+      final altyazi = widget.film.altyazilar![index];
+      final altyaziUrl = altyazi.url;
+
+      debugPrint('📝 Altyazı yükleniyor: ${altyazi.baslik}');
+      debugPrint('📝 URL: $altyaziUrl');
+
       final subtitles = await _parseSrtFile(altyaziUrl);
 
       if (subtitles.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Alt yazı yüklenemedi'),
+            SnackBar(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '❌ Alt yazı yüklenemedi',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Olası nedenler: CORS, format hatası, veya dosya bulunamadı',
+                    style: TextStyle(fontSize: 11, color: Colors.white70),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    altyaziUrl,
+                    style: const TextStyle(
+                      fontSize: 9,
+                      fontFamily: 'monospace',
+                      color: Colors.white60,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
               backgroundColor: Colors.red,
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 4),
             ),
           );
         }
@@ -704,7 +895,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '✅ Alt yazı: ${widget.film.altyazilar![index].baslik}',
+              '✅ ${subtitles.length} alt yazı yüklendi: ${altyazi.baslik}',
             ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),

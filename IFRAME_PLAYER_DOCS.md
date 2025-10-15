@@ -1,8 +1,8 @@
-# İframe Player - Dokümantasyon
+# İframe Player - Dokümantasyon (Güncellenmiş)
 
 ## 📝 Özet
 
-İframe player, web-based video kaynakları için geliştirilmiş WebView tabanlı bir oynatıcıdır. Normal video player'ın açamadığı iframe/embed URL'leri için tasarlanmıştır.
+İframe player, web-based video kaynakları için geliştirilmiş WebView tabanlı bir oynatıcıdır. Normal video player'ın açamadığı iframe/embed URL'leri için tasarlanmıştır. **Medya API'lerini otomatik olarak yakalayıp native player'a yönlendirme özelliği ile donatılmıştır.**
 
 ## 🎯 Ne Zaman Kullanılır?
 
@@ -12,13 +12,15 @@
 
 ## 🚀 Özellikler
 
-### 1. **Network İnterceptor**
+### 1. **Network İnterceptor (Geliştirilmiş)**
 JavaScript injection ile network isteklerini yakalar:
-- XHR (XMLHttpRequest) monitoring
-- Fetch API monitoring
-- Video element observer (MutationObserver)
+- **XHR (XMLHttpRequest)** monitoring
+- **Fetch API** monitoring
+- **Video element observer** (MutationObserver)
+- **Content-Type** header kontrolü
+- **Response body** analizi
 
-### 2. **Response Body Analizi** 🆕
+### 2. **Kapsamlı Medya Tespiti** 🆕
 URL uzantısı her zaman güvenilir değil. Örnek:
 ```
 https://sx1.rovideox.org/v/d/tt0816692/tr/480
@@ -31,26 +33,69 @@ Bu URL'de `.m3u8` uzantısı yok ama response başlangıcı:
 ...
 ```
 
-**Çözüm:**
-- XHR: `addEventListener('load')` ile response body kontrolü
-- Fetch: `response.clone().text()` ile content analizi
-- M3U8 signature: `#EXTM3U`, `#EXT-X-` kontrolü
+**İyileştirilmiş Tespit Mekanizmaları:**
 
-### 3. **Kalıcı Header Kontrolleri**
+#### a) URL Pattern Kontrolü
+```javascript
+const videoFormats = ['.m3u8', '.mp4', '.ts', '.mkv', '.avi', '.webm', '.mov', '.flv', '.m4v', '.mpd'];
+const streamPatterns = ['hls', 'dash', 'video', 'stream', 'manifest', 'playlist', 'chunk', 'segment'];
+```
+
+#### b) Content-Type Kontrolü
+```javascript
+const mediaContentTypes = [
+  'video/', 'audio/', 'application/vnd.apple.mpegurl',
+  'application/x-mpegurl', 'application/dash+xml',
+  'application/octet-stream'
+];
+```
+
+#### c) Response Content Analizi
+```javascript
+// M3U8 playlist kontrolü
+text.includes('#EXTM3U') || text.includes('#EXT-X-')
+
+// DASH MPD kontrolü
+text.includes('<MPD') || (text.includes('<?xml') && text.includes('urn:mpeg:dash'))
+```
+
+### 3. **Otomatik Yönlendirme Dialog** 🎉
+Medya API'si yakalandığında:
+
+- ✨ **Animasyonlu popup** gösterilir
+- ⏱️ **5 saniyelik geri sayım** başlar
+- 🎯 Kullanıcı cevap vermezse **otomatik yönlendirilir**
+- ✅ "Hemen Geç" butonu ile **anında yönlendirme**
+- ❌ "İframe'de Kal" ile **popup kapatma**
+
+**Dialog Özellikleri:**
+- `ScaleTransition` + `FadeTransition` animasyonları
+- Dönen yeşil check icon animasyonu
+- Dairesel progress indicator ile geri sayım göstergesi
+- Yakalanan URL'in görüntülenmesi
+- Duplicate dialog önleme mekanizması
+
+### 4. **Kalıcı Header Kontrolleri**
 Positioned widget ile her zaman görünür:
-- ⬅️ Geri butonu
-- 📽️ Film bilgisi + iframe badge
-- 🔄 Status (Analyzing/URL Bulundu)
-- ↻ Yeniden Yükle
-- 📂 Kaynak Menüsü (dropdown)
-- ▶️ Native Player (URL yakalandıysa)
+- ⬅️ **Geri butonu** (Film detay sayfasına)
+- 📽️ **Film bilgisi** + iframe badge
+- � **Analiz durumu** (animasyonlu)
+  - "Analiz ediliyor..." (turuncu, fade-in animasyon)
+  - "URL Bulundu" (yeşil, scale animasyon)
+- ↻ **Yeniden Yükle** butonu
+- 📂 **Kaynak Menüsü** (multiple sources için)
+- ▶️ **Native Player** butonu (URL yakalandıysa)
 
-### 4. **Analiz Süresi & Periyodik Kontrol**
-- **30 saniye** analiz süresi (önce 5 saniyeydi)
+### 5. **Analiz Süreci**
+
+- **30 saniye** analiz göstergesi (UI'da görünür)
 - **3 saniyede bir** periyodik video element kontrolü
+- **Continuous monitoring** (URL yakalanana kadar devam eder)
+- Dialog gösterilirken **periyodik kontrol durur**
 - Arka planda dinleme devam eder
 
-### 5. **Otomatik Native Player Geçişi**
+### 6. **Otomatik Native Player Geçişi**
+
 Video URL yakalandığında:
 ```
 [Dialog Gösterir]
@@ -210,5 +255,5 @@ FETCH_M3U8_CONTENT [application/x-mpegURL]: https://...
 
 ---
 
-**Son Güncelleme:** 15 Ekim 2025  
+**Son Güncelleme:** 15 Ekim 2025
 **Versiyon:** 1.2.0

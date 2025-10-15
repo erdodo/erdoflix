@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/film.dart';
+import '../models/kaynak.dart';
+import '../models/altyazi.dart';
 
 class ApiService {
   static const String baseUrl = 'https://app.erdoganyesil.org';
@@ -303,6 +306,74 @@ class ApiService {
     } catch (e) {
       print('Error searching films: $e');
       return [];
+    }
+  }
+
+  /// Film kaynağı oluştur
+  Future<Kaynak> createFilmKaynagi(int filmId, Kaynak kaynak) async {
+    try {
+      final payload = {
+        'film_id': {'id': filmId},
+        'baslik': kaynak.baslik,
+        'url': kaynak.url,
+        'is_iframe': kaynak.isIframe,
+        if (kaynak.kaynakId != null) 'kaynak_id': {'id': kaynak.kaynakId},
+      };
+
+      debugPrint('📤 Creating Kaynak: $payload');
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/film_kaynaklari:create'),
+        headers: _headers,
+        body: json.encode(payload),
+      );
+
+      debugPrint('📥 Create Kaynak Response Status: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        debugPrint('✅ Kaynak created: ${data['data']}');
+        return Kaynak.fromJson(data['data']);
+      } else {
+        debugPrint('❌ Create Kaynak Error: ${response.body}');
+        throw Exception('Failed to create kaynak: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('❌ Error creating kaynak: $e');
+      rethrow;
+    }
+  }
+
+  /// Film altyazısı oluştur
+  Future<Altyazi> createFilmAltyazisi(int filmId, Altyazi altyazi) async {
+    try {
+      final payload = {
+        'filmler': {'id': filmId},
+        'baslik': altyazi.baslik,
+        'url': altyazi.url,
+      };
+
+      debugPrint('📤 Creating Altyazi: $payload');
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/film_altyazilari:create'),
+        headers: _headers,
+        body: json.encode(payload),
+      );
+
+      debugPrint('📥 Create Altyazi Response Status: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        debugPrint('✅ Altyazi created: ${data['data']}');
+        return Altyazi.fromJson(data['data']);
+      } else {
+        debugPrint('❌ Create Altyazi Error: ${response.body}');
+        throw Exception('Failed to create altyazi: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('❌ Error creating altyazi: $e');
+      rethrow;
     }
   }
 }

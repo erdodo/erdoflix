@@ -4,8 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../models/film.dart';
+import '../models/kaynak.dart';
+import '../models/altyazi.dart';
 import '../services/api_service.dart';
 import '../services/film_cache_service.dart';
+import '../services/source_collector_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/navbar.dart';
 
@@ -20,6 +23,8 @@ class FilmDetailScreen extends StatefulWidget {
 
 class _FilmDetailScreenState extends State<FilmDetailScreen> {
   final ApiService _apiService = ApiService();
+  final SourceCollectorService _sourceCollector = SourceCollectorService();
+
   Film? _detailedFilm;
   List<Film> _similarFilms = [];
   bool _isLoading = true;
@@ -28,10 +33,22 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
   int _navbarFocusedIndex = 0;
   bool _isNavbarFocused = false;
 
+  // Background source collection
+  List<Kaynak> _discoveredSources = [];
+  List<Altyazi> _discoveredSubtitles = [];
+  bool _isCollectingSources = false;
+
   @override
   void initState() {
     super.initState();
     _loadFilmDetails();
+    _startBackgroundSourceCollection();
+  }
+
+  @override
+  void dispose() {
+    _sourceCollector.dispose();
+    super.dispose();
   }
 
   Future<void> _loadFilmDetails() async {
@@ -63,6 +80,75 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
       _detailedFilm = widget.film;
       _isLoading = false;
     });
+  }
+
+  /// Background'da iframe kaynaklarını topla ve veritabanına kaydet
+  Future<void> _startBackgroundSourceCollection() async {
+    final film = _detailedFilm ?? widget.film;
+
+    // Film'in iframe kaynakları varsa, arka planda topla
+    final iframeSources =
+        film.kaynaklar?.where((k) => k.isIframe).toList() ?? [];
+
+    if (iframeSources.isEmpty) {
+      debugPrint('🔍 SOURCE COLLECTION: Iframe kaynağı yok');
+      return;
+    }
+
+    setState(() {
+      _isCollectingSources = true;
+    });
+
+    debugPrint(
+      '🔍 SOURCE COLLECTION: ${iframeSources.length} iframe kaynağı bulundu',
+    );
+
+    // Stream'leri dinle - UI'ı real-time güncellemek için
+    _sourceCollector.sourcesStream.listen((sources) {
+      setState(() {
+        _discoveredSources = sources;
+      });
+      debugPrint(
+        '✅ SOURCE COLLECTION: ${sources.length} video kaynağı bulundu',
+      );
+    });
+
+    _sourceCollector.subtitlesStream.listen((subtitles) {
+      setState(() {
+        _discoveredSubtitles = subtitles;
+      });
+      debugPrint('✅ SOURCE COLLECTION: ${subtitles.length} altyazı bulundu');
+    });
+
+    // Her iframe kaynağı için toplamayı başlat (sırayla)
+    for (int i = 0; i < iframeSources.length; i++) {
+      final source = iframeSources[i];
+      debugPrint(
+        '🔍 SOURCE COLLECTION: [${i + 1}/${iframeSources.length}] Toplama başlatılıyor: ${source.baslik}',
+      );
+
+      try {
+        await _sourceCollector.startCollecting(
+          filmId: film.id,
+          iframeUrl: source.url,
+          sourceTitle: source.baslik,
+        );
+
+        debugPrint(
+          '✅ SOURCE COLLECTION: [${i + 1}/${iframeSources.length}] Tamamlandı: ${source.baslik}',
+        );
+      } catch (e) {
+        debugPrint(
+          '❌ SOURCE COLLECTION: [${i + 1}/${iframeSources.length}] Hata: $e',
+        );
+      }
+    }
+
+    setState(() {
+      _isCollectingSources = false;
+    });
+
+    debugPrint('🎉 SOURCE COLLECTION: TÜM İFRAMELER TAMAMLANDI!');
   }
 
   void _handleKeyEvent(RawKeyEvent event) {
@@ -237,6 +323,179 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
           ),
         );
       },
+    );
+  }
+
+  /// Bulunan kaynakları gösteren section
+  Widget _buildDiscoveredSourcesSection(bool isMobile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 4,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text('Bulunan Kaynaklar', style: AppTheme.headingMedium),
+            const SizedBox(width: 12),
+            if (_isCollectingSources)
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  color: AppTheme.primary,
+                  strokeWidth: 2,
+                ),
+              ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.primary.withOpacity(0.5)),
+              ),
+              child: Text(
+                '${_discoveredSources.length} Video',
+                style: AppTheme.labelMedium.copyWith(
+                  color: AppTheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppTheme.accent.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.accent.withOpacity(0.5)),
+              ),
+              child: Text(
+                '${_discoveredSubtitles.length} Altyazı',
+                style: AppTheme.labelMedium.copyWith(
+                  color: AppTheme.accent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Kaynak listesi
+        if (_discoveredSources.isNotEmpty)
+          Container(
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundCard.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _discoveredSources.length,
+              separatorBuilder: (context, index) =>
+                  Divider(height: 1, color: Colors.white.withOpacity(0.1)),
+              itemBuilder: (context, index) {
+                final source = _discoveredSources[index];
+                return ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.play_circle_filled,
+                      color: Colors.white,
+                    ),
+                  ),
+                  title: Text(
+                    source.baslik,
+                    style: AppTheme.bodyLarge.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
+                    source.url.length > 50
+                        ? '${source.url.substring(0, 50)}...'
+                        : source.url,
+                    style: AppTheme.bodySmall.copyWith(color: Colors.white70),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: AppTheme.success,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Kaydedildi',
+                        style: AppTheme.labelSmall.copyWith(
+                          color: AppTheme.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        // Durum mesajı
+        if (_discoveredSources.isEmpty && _isCollectingSources)
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundCard.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: AppTheme.primary,
+                    strokeWidth: 2,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Kaynaklar Taranıyor...',
+                        style: AppTheme.bodyLarge.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Iframe kaynakları arka planda taranarak video linkleri bulunuyor',
+                        style: AppTheme.bodySmall.copyWith(
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
@@ -468,6 +727,20 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                   ),
                                 ],
                               ),
+                              // Discovered Sources Section
+                              if (_discoveredSources.isNotEmpty ||
+                                  _isCollectingSources)
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isMobile
+                                        ? AppTheme.spacingLarge
+                                        : AppTheme.spacingXLarge,
+                                    vertical: AppTheme.spacingMedium,
+                                  ),
+                                  child: _buildDiscoveredSourcesSection(
+                                    isMobile,
+                                  ),
+                                ),
                               // Film Description
                               Padding(
                                 padding: EdgeInsets.all(
