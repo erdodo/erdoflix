@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/film.dart';
+import '../utils/app_theme.dart';
 import 'film_card.dart';
 
 class FilmRow extends StatefulWidget {
@@ -112,14 +113,26 @@ class _FilmRowState extends State<FilmRow> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            widget.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingMedium,
+            vertical: AppTheme.spacingSmall,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 4,
+                height: 24,
+                decoration: BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                ),
+              ),
+              const SizedBox(width: AppTheme.spacingSmall),
+              Text(
+                widget.title,
+                style: AppTheme.headlineMedium,
+              ),
+            ],
           ),
         ),
         SizedBox(

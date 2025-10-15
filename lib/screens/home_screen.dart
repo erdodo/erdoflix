@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import '../models/film.dart';
 import '../models/tur.dart';
 import '../services/api_service.dart';
 import '../services/tur_service.dart';
+import '../utils/app_theme.dart';
 import '../widgets/film_row.dart';
 import '../widgets/navbar.dart';
 
@@ -384,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
       focusNode: _focusNode,
       onKey: _handleKeyEvent,
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppTheme.background,
         body: SafeArea(
           // En üstteki içeriği status bar'dan korur
           // Alt navigation bar için SafeArea kullanmayacağız, kendi padding'i var
@@ -392,7 +394,10 @@ class _HomeScreenState extends State<HomeScreen> {
           bottom: false,
           child: _isLoading
               ? const Center(
-                  child: CircularProgressIndicator(color: Colors.red),
+                  child: CircularProgressIndicator(
+                    color: AppTheme.primary,
+                    strokeWidth: 3,
+                  ),
                 )
               : Row(
                   children: [
@@ -490,15 +495,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final heroFilm = _popularFilms.first;
+    final isMobile = MediaQuery.of(context).size.width < 800;
 
     return Container(
-      height: 500,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.black.withOpacity(0.3), Colors.black],
-        ),
+      height: isMobile ? 400 : 550,
+      decoration: const BoxDecoration(
+        color: AppTheme.background,
       ),
       child: Stack(
         children: [
@@ -509,124 +511,93 @@ class _HomeScreenState extends State<HomeScreen> {
                 heroFilm.arkaPlan!,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return Container(color: Colors.grey[900]);
+                  return Container(color: AppTheme.backgroundMedium);
                 },
               ),
             ),
-          // Gradient overlay
+          // Gradient overlay (Netflix tarzı)
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.8),
-                    Colors.black,
-                  ],
-                ),
+                gradient: AppTheme.heroGradient,
               ),
             ),
           ),
-          // Film bilgileri
+          // Film bilgileri ile glassmorphism card
           Positioned(
-            bottom: 60,
-            left: 40,
-            right: 40,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  heroFilm.baslik,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
+            bottom: isMobile ? 40 : 80,
+            left: isMobile ? 20 : 60,
+            right: isMobile ? 20 : MediaQuery.of(context).size.width * 0.5,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                child: Container(
+                  padding: EdgeInsets.all(isMobile ? AppTheme.spacingMedium : AppTheme.spacingLarge),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppTheme.background.withOpacity(0.6),
+                        AppTheme.backgroundMedium.withOpacity(0.4),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        heroFilm.baslik,
+                        style: isMobile 
+                            ? AppTheme.headlineLarge
+                            : AppTheme.displayMedium,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: AppTheme.spacingSmall),
+                      Text(
+                        heroFilm.detay ?? 'Detay bilgisi bulunmamaktadır.',
+                        style: AppTheme.bodyMedium,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: AppTheme.spacingLarge),
+                      Row(
+                        children: [
+                          // İzle butonu
+                          Expanded(
+                            child: _buildHeroButton(
+                              onPressed: () => _onFilmTap(heroFilm),
+                              icon: Icons.play_arrow,
+                              label: 'İzle',
+                              isPrimary: true,
+                              isFocused: _focusedRow == -1 && _heroBannerFocusedButton == 0,
+                            ),
+                          ),
+                          SizedBox(width: AppTheme.spacingSmall),
+                          // Detaylar butonu
+                          Expanded(
+                            child: _buildHeroButton(
+                              onPressed: () => _onFilmTap(heroFilm),
+                              icon: Icons.info_outline,
+                              label: 'Detaylar',
+                              isPrimary: false,
+                              isFocused: _focusedRow == -1 && _heroBannerFocusedButton == 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  heroFilm.detay ?? 'Detay bilgisi bulunmamaktadır.',
-                  style: const TextStyle(color: Colors.white70, fontSize: 16),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    // İzle butonu
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border:
-                            _focusedRow == -1 && _heroBannerFocusedButton == 0
-                            ? Border.all(color: Colors.white, width: 3)
-                            : null,
-                        boxShadow:
-                            _focusedRow == -1 && _heroBannerFocusedButton == 0
-                            ? [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.6),
-                                  blurRadius: 15,
-                                  spreadRadius: 3,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: ElevatedButton.icon(
-                        onPressed: () => _onFilmTap(heroFilm),
-                        icon: const Icon(Icons.play_arrow),
-                        label: const Text('İzle'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Detaylar butonu
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border:
-                            _focusedRow == -1 && _heroBannerFocusedButton == 1
-                            ? Border.all(color: Colors.white, width: 3)
-                            : null,
-                        boxShadow:
-                            _focusedRow == -1 && _heroBannerFocusedButton == 1
-                            ? [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.6),
-                                  blurRadius: 15,
-                                  spreadRadius: 3,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: ElevatedButton.icon(
-                        onPressed: () => _onFilmTap(heroFilm),
-                        icon: const Icon(Icons.info_outline),
-                        label: const Text('Detaylar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.3),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -634,68 +605,130 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildHeroButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+    required bool isPrimary,
+    required bool isFocused,
+  }) {
+    return TweenAnimationBuilder<double>(
+      duration: AppTheme.animationMedium,
+      curve: AppTheme.animationCurve,
+      tween: Tween(begin: 1.0, end: isFocused ? 1.05 : 1.0),
+      builder: (context, scale, child) {
+        return Transform.scale(
+          scale: scale,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              gradient: isFocused ? AppTheme.primaryGradient : null,
+              boxShadow: isFocused ? AppTheme.glowShadow : null,
+            ),
+            child: ElevatedButton.icon(
+              onPressed: onPressed,
+              icon: Icon(icon, size: 20),
+              label: Text(label, style: AppTheme.labelLarge),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isPrimary
+                    ? (isFocused ? Colors.transparent : AppTheme.primary)
+                    : Colors.white.withOpacity(0.2),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacingMedium,
+                  vertical: AppTheme.spacingSmall,
+                ),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildCategoryRow() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingMedium,
+            vertical: AppTheme.spacingSmall,
+          ),
           child: Text(
             'Kategoriler',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTheme.headlineMedium,
           ),
         ),
         SizedBox(
-          height: 60,
+          height: 52,
           child: ListView.builder(
             key: _categoryKey,
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMedium),
             itemCount: _turler.length,
             itemBuilder: (context, index) {
               final tur = _turler[index];
               final isFocused = _focusedRow == -2 && _focusedColumn == index;
-              return Container(
-                margin: const EdgeInsets.only(right: 12),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    color: isFocused ? Colors.red : Colors.grey[800],
-                    borderRadius: BorderRadius.circular(8),
-                    border: isFocused
-                        ? Border.all(color: Colors.white, width: 2)
-                        : null,
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => context.go('/category/${tur.id}'),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
+              
+              return TweenAnimationBuilder<double>(
+                duration: AppTheme.animationMedium,
+                curve: AppTheme.animationCurve,
+                tween: Tween(begin: 1.0, end: isFocused ? 1.08 : 1.0),
+                builder: (context, scale, child) {
+                  return Transform.scale(
+                    scale: scale,
+                    child: Container(
+                      margin: const EdgeInsets.only(right: AppTheme.spacingSmall),
+                      child: AnimatedContainer(
+                        duration: AppTheme.animationMedium,
+                        decoration: BoxDecoration(
+                          gradient: isFocused
+                              ? AppTheme.primaryGradient
+                              : LinearGradient(
+                                  colors: [
+                                    AppTheme.backgroundCard,
+                                    AppTheme.backgroundMedium,
+                                  ],
+                                ),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                          border: Border.all(
+                            color: isFocused
+                                ? AppTheme.primary.withOpacity(0.5)
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                          boxShadow: isFocused ? AppTheme.glowShadow : null,
                         ),
-                        child: Center(
-                          child: Text(
-                            tur.baslik,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: isFocused
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => context.go('/category/${tur.id}'),
+                            borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppTheme.spacingLarge,
+                                vertical: AppTheme.spacingSmall,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  tur.baslik,
+                                  style: isFocused
+                                      ? AppTheme.labelLarge.copyWith(fontWeight: FontWeight.bold)
+                                      : AppTheme.labelMedium,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
           ),

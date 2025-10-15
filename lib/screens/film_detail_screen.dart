@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../models/film.dart';
 import '../services/api_service.dart';
 import '../services/film_cache_service.dart';
+import '../utils/app_theme.dart';
 import '../widgets/navbar.dart';
 
 class FilmDetailScreen extends StatefulWidget {
@@ -171,16 +173,72 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('Yakında', style: TextStyle(color: Colors.white)),
-        content: Text(message, style: const TextStyle(color: Colors.white70)),
+        backgroundColor: AppTheme.backgroundCard,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        ),
+        title: Text('Yakında', style: AppTheme.headlineSmall),
+        content: Text(message, style: AppTheme.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Tamam', style: TextStyle(color: Colors.red)),
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.primary,
+            ),
+            child: const Text('Tamam'),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required bool isPrimary,
+    required bool isFocused,
+  }) {
+    return TweenAnimationBuilder<double>(
+      duration: AppTheme.animationMedium,
+      curve: AppTheme.animationCurve,
+      tween: Tween(begin: 1.0, end: isFocused ? 1.05 : 1.0),
+      builder: (context, scale, child) {
+        return Transform.scale(
+          scale: scale,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: isFocused && isPrimary
+                  ? AppTheme.primaryGradient
+                  : null,
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              boxShadow: isFocused ? AppTheme.glowShadow : null,
+            ),
+            child: ElevatedButton.icon(
+              onPressed: onTap,
+              icon: Icon(icon, size: 24),
+              label: Text(label, style: AppTheme.labelLarge),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isPrimary
+                    ? (isFocused ? Colors.transparent : AppTheme.primary)
+                    : AppTheme.backgroundCard.withOpacity(0.8),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacingLarge,
+                  vertical: AppTheme.spacingMedium,
+                ),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                  side: isFocused && !isPrimary
+                      ? BorderSide(color: AppTheme.primary, width: 2)
+                      : BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -193,13 +251,16 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
       focusNode: FocusNode()..requestFocus(),
       onKey: (event) => _handleKeyEvent(event),
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppTheme.background,
         body: SafeArea(
           top: true,
           bottom: false,
           child: _isLoading
               ? const Center(
-                  child: CircularProgressIndicator(color: Colors.red),
+                  child: CircularProgressIndicator(
+                    color: AppTheme.primary,
+                    strokeWidth: 3,
+                  ),
                 )
               : Row(
                   children: [
@@ -243,28 +304,36 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                   width: double.infinity,
                                   height: 500,
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.transparent,
-                                        Colors.black.withValues(alpha: 0.7),
-                                        Colors.black,
-                                      ],
-                                    ),
+                                    gradient: AppTheme.heroGradient,
                                   ),
                                 ),
-                                // Back Button
+                                // Back Button with glassmorphism
                                 Positioned(
                                   top: 40,
                                   left: 20,
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.arrow_back,
-                                      color: Colors.white,
-                                      size: 30,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.3),
+                                          borderRadius: BorderRadius.circular(AppTheme.radiusLarge),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(0.2),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: IconButton(
+                                          icon: const Icon(
+                                            Icons.arrow_back,
+                                            color: Colors.white,
+                                            size: 28,
+                                          ),
+                                          onPressed: () => context.go('/'),
+                                        ),
+                                      ),
                                     ),
-                                    onPressed: () => context.go('/'),
                                   ),
                                 ),
                                 // Film Info
@@ -279,158 +348,78 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                                       // Title
                                       Text(
                                         film.baslik,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 48,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: isMobile
+                                            ? AppTheme.displaySmall
+                                            : AppTheme.displayLarge,
                                       ),
-                                      const SizedBox(height: 12),
+                                      SizedBox(height: AppTheme.spacingSmall),
                                       // Metadata
-                                      Row(
+                                      Wrap(
+                                        spacing: AppTheme.spacingSmall,
+                                        runSpacing: AppTheme.spacingXSmall,
                                         children: [
                                           if (film.yayinTarihi != null)
-                                            Text(
-                                              film.yayinTarihi!,
-                                              style: TextStyle(
-                                                color: Colors.white.withValues(
-                                                  alpha: 0.8,
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: AppTheme.spacingSmall,
+                                                vertical: AppTheme.spacingXSmall,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.backgroundCard.withOpacity(0.6),
+                                                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                                                border: Border.all(
+                                                  color: AppTheme.primary.withOpacity(0.3),
+                                                  width: 1,
                                                 ),
-                                                fontSize: 16,
+                                              ),
+                                              child: Text(
+                                                film.yayinTarihi!,
+                                                style: AppTheme.labelMedium,
                                               ),
                                             ),
-                                          if (film.turler.isNotEmpty) ...[
-                                            const SizedBox(width: 16),
-                                            Text(
-                                              film.turler
-                                                  .map((t) => t.baslik)
-                                                  .join(', '),
-                                              style: TextStyle(
-                                                color: Colors.white.withValues(
-                                                  alpha: 0.8,
+                                          ...film.turler.map((tur) => Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: AppTheme.spacingSmall,
+                                                  vertical: AppTheme.spacingXSmall,
                                                 ),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
+                                                decoration: BoxDecoration(
+                                                  gradient: AppTheme.primaryGradient,
+                                                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                                                ),
+                                                child: Text(
+                                                  tur.baslik,
+                                                  style: AppTheme.labelSmall.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              )),
                                         ],
                                       ),
-                                      const SizedBox(height: 24),
+                                      SizedBox(height: AppTheme.spacingLarge),
                                       // Action Buttons
                                       Row(
                                         children: [
                                           // İzle Button
-                                          AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 200,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: _focusedButton == 0
-                                                  ? Colors.white
-                                                  : Colors.white.withValues(
-                                                      alpha: 0.9,
-                                                    ),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              border: _focusedButton == 0
-                                                  ? Border.all(
-                                                      color: Colors.red,
-                                                      width: 3,
-                                                    )
-                                                  : null,
-                                            ),
-                                            child: Material(
-                                              color: Colors.transparent,
-                                              child: InkWell(
-                                                onTap: () =>
-                                                    _handleButtonPress(0),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 32,
-                                                        vertical: 12,
-                                                      ),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: const [
-                                                      Icon(
-                                                        Icons.play_arrow,
-                                                        color: Colors.black,
-                                                        size: 30,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                        'İzle',
-                                                        style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                          Expanded(
+                                            flex: isMobile ? 1 : 0,
+                                            child: _buildActionButton(
+                                              icon: Icons.play_arrow,
+                                              label: 'İzle',
+                                              onTap: () => _handleButtonPress(0),
+                                              isPrimary: true,
+                                              isFocused: _focusedButton == 0,
                                             ),
                                           ),
-                                          const SizedBox(width: 16),
+                                          SizedBox(width: AppTheme.spacingSmall),
                                           // Listeye Ekle Button
-                                          AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 200,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[800]!
-                                                  .withOpacity(
-                                                    _focusedButton == 1
-                                                        ? 1.0
-                                                        : 0.7,
-                                                  ),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              border: _focusedButton == 1
-                                                  ? Border.all(
-                                                      color: Colors.white,
-                                                      width: 3,
-                                                    )
-                                                  : null,
-                                            ),
-                                            child: Material(
-                                              color: Colors.transparent,
-                                              child: InkWell(
-                                                onTap: () =>
-                                                    _handleButtonPress(1),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 32,
-                                                        vertical: 12,
-                                                      ),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: const [
-                                                      Icon(
-                                                        Icons.add,
-                                                        color: Colors.white,
-                                                        size: 30,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Text(
-                                                        'Listeye Ekle',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
+                                          Expanded(
+                                            flex: isMobile ? 1 : 0,
+                                            child: _buildActionButton(
+                                              icon: Icons.add,
+                                              label: 'Listeye Ekle',
+                                              onTap: () => _handleButtonPress(1),
+                                              isPrimary: false,
+                                              isFocused: _focusedButton == 1,
                                             ),
                                           ),
                                         ],
@@ -442,42 +431,64 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                             ),
                             // Film Description
                             Padding(
-                              padding: const EdgeInsets.all(40),
+                              padding: EdgeInsets.all(isMobile ? AppTheme.spacingLarge : AppTheme.spacingXLarge),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    'Açıklama',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    film.detay ??
-                                        'Açıklama bilgisi bulunmuyor.',
-                                    style: TextStyle(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.8,
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 4,
+                                        height: 28,
+                                        decoration: BoxDecoration(
+                                          gradient: AppTheme.primaryGradient,
+                                          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                                        ),
                                       ),
-                                      fontSize: 16,
-                                      height: 1.5,
+                                      SizedBox(width: AppTheme.spacingSmall),
+                                      Text(
+                                        'Açıklama',
+                                        style: AppTheme.headlineMedium,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: AppTheme.spacingMedium),
+                                  Container(
+                                    padding: const EdgeInsets.all(AppTheme.spacingLarge),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.backgroundCard.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                                      border: Border.all(
+                                        color: AppTheme.backgroundMedium,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      film.detay ?? 'Açıklama bilgisi bulunmuyor.',
+                                      style: AppTheme.bodyLarge,
                                     ),
                                   ),
-                                  const SizedBox(height: 40),
+                                  SizedBox(height: AppTheme.spacingXLarge),
                                   // Similar Films
                                   if (_similarFilms.isNotEmpty) ...[
-                                    const Text(
-                                      'Benzer Filmler',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 4,
+                                          height: 28,
+                                          decoration: BoxDecoration(
+                                            gradient: AppTheme.primaryGradient,
+                                            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                                          ),
+                                        ),
+                                        SizedBox(width: AppTheme.spacingSmall),
+                                        Text(
+                                          'Benzer Filmler',
+                                          style: AppTheme.headlineMedium,
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 20),
+                                    SizedBox(height: AppTheme.spacingMedium),
                                     SizedBox(
                                       height: 300,
                                       child: ListView.builder(
