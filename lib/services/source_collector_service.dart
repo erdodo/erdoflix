@@ -260,13 +260,11 @@ class SourceCollectorService {
     int filmId,
     String sourceTitle,
   ) async {
-    // Duplicate kontrolü
+    // Duplicate kontrolü - sadece local check
     if (_discoveredSourceUrls.contains(url)) {
-      debugPrint('⏭️  SOURCE COLLECTOR: Kaynak zaten var, atlanıyor: $url');
+      debugPrint('⏭️  SOURCE COLLECTOR: Kaynak local cache\'de var, atlanıyor');
       return;
     }
-
-    _discoveredSourceUrls.add(url);
 
     // Kalite tespiti
     final quality = _detectQuality(url);
@@ -276,16 +274,17 @@ class SourceCollectorService {
     debugPrint('📹 URL: $url');
 
     // Veritabanında kontrol et
-    final existingSources = await _apiService.getFilmKaynaklari(filmId);
-    final alreadyExists = existingSources.any((k) => k.url == url);
-
-    if (alreadyExists) {
-      debugPrint('⏭️  SOURCE COLLECTOR: Kaynak veritabanında zaten var');
-      return;
-    }
-
-    // Veritabanına kaydet
     try {
+      final existingSourcesData = await _apiService.getFilmKaynaklari(filmId);
+      final alreadyExists = existingSourcesData.any((k) => k['url'] == url);
+
+      if (alreadyExists) {
+        debugPrint('⏭️  SOURCE COLLECTOR: Kaynak veritabanında zaten var');
+        _discoveredSourceUrls.add(url); // Cache'e ekle
+        return;
+      }
+
+      // Veritabanına kaydet
       final newSource = Kaynak(
         id: 0, // API otomatik oluşturacak
         url: url,
@@ -302,6 +301,9 @@ class SourceCollectorService {
         '✅ SOURCE COLLECTOR: Kaynak veritabanına eklendi: ${savedSource.id}',
       );
 
+      // Başarılı kaydettikten sonra cache'e ekle
+      _discoveredSourceUrls.add(url);
+
       // Listeye ekle
       _currentSources.add(savedSource);
 
@@ -314,13 +316,11 @@ class SourceCollectorService {
 
   /// Altyazı handle et
   Future<void> _handleSubtitleSource(String url, int filmId) async {
-    // Duplicate kontrolü
+    // Duplicate kontrolü - sadece local check
     if (_discoveredSubtitleUrls.contains(url)) {
-      debugPrint('⏭️  SOURCE COLLECTOR: Altyazı zaten var, atlanıyor: $url');
+      debugPrint('⏭️  SOURCE COLLECTOR: Altyazı local cache\'de var, atlanıyor');
       return;
     }
-
-    _discoveredSubtitleUrls.add(url);
 
     // Format tespiti
     String title = 'Web Altyazı';
@@ -334,16 +334,17 @@ class SourceCollectorService {
     debugPrint('📝 URL: $url');
 
     // Veritabanında kontrol et
-    final existingSubtitles = await _apiService.getFilmAltyazilari(filmId);
-    final alreadyExists = existingSubtitles.any((a) => a.url == url);
-
-    if (alreadyExists) {
-      debugPrint('⏭️  SOURCE COLLECTOR: Altyazı veritabanında zaten var');
-      return;
-    }
-
-    // Veritabanına kaydet
     try {
+      final existingSubtitlesData = await _apiService.getFilmAltyazilari(filmId);
+      final alreadyExists = existingSubtitlesData.any((a) => a['url'] == url);
+
+      if (alreadyExists) {
+        debugPrint('⏭️  SOURCE COLLECTOR: Altyazı veritabanında zaten var');
+        _discoveredSubtitleUrls.add(url); // Cache'e ekle
+        return;
+      }
+
+      // Veritabanına kaydet
       final newSubtitle = Altyazi(
         id: 0,
         url: url,
@@ -359,6 +360,9 @@ class SourceCollectorService {
       debugPrint(
         '✅ SOURCE COLLECTOR: Altyazı veritabanına eklendi: ${savedSubtitle.id}',
       );
+
+      // Başarılı kaydettikten sonra cache'e ekle
+      _discoveredSubtitleUrls.add(url);
 
       // Listeye ekle
       _currentSubtitles.add(savedSubtitle);

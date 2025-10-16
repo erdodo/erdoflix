@@ -15,6 +15,7 @@
 - [Proje Yapısı](#-proje-yapısı)
 - [Teknolojiler](#-teknolojiler)
 - [Dokümantasyon](#-dokümantasyon)
+- [Son Güncellemeler](#-son-güncellemeler)
 - [Roadmap](#-roadmap)
 - [Katkıda Bulunma](#-katkıda-bulunma)
 
@@ -173,13 +174,45 @@ erdoflix/
 
 ## 📚 Dokümantasyon
 
+### 📖 Ana Dokümantasyon
+- **[docs/](docs/)** - Teknik dokümantasyon ve geliştirme notları
+  - [TV Navigation Fixes](docs/TV_NAVIGATION_FIXES.md) - Android TV kumandası desteği
+  - [iFrame Sources Update](docs/IFRAME_SOURCES_UPDATE.md) - iFrame kaynakları gösterimi
+
+### 📋 Kullanıcı Dokümantasyonu
 - [API Dokümantasyonu](API_DOCUMENTATION.md) - Backend API referansı
 - [Kullanıcı Kılavuzu](USER_GUIDE.md) - Son kullanıcı rehberi
 - [Test Raporu](TEST_REPORT.md) - Kapsamlı test sonuçları
 - [Iframe Player Dokümantasyonu](IFRAME_PLAYER_DOCS.md) - Medya yakalama sistemi
 - [Iframe Player İyileştirmeleri](IFRAME_IMPROVEMENTS.md) - Son güncellemeler (16 Ekim 2025)
+
+### 🗺️ Planlama
 - [Roadmap](roadmap/yapilacaklar.md) - Özellik planlaması
 - [Bug Tracker](roadmap/hatalar.md) - Hata takibi (24 bug düzeltildi ✅)
+
+## 🎉 Son Güncellemeler
+
+### v1.2.0 - 16 Ekim 2025
+
+#### 🎮 Android TV Desteği
+- ✅ **TV Kumandası Navigasyonu**
+  - Film detay ekranında kaynak listesi D-pad navigasyonu
+  - Player popup menülerinde focus yönetimi (altyazı, kaynak, hız)
+  - SELECT/ENTER ve BACK tuş desteği
+  - Focus highlight ile görsel geri bildirim
+
+#### 🎬 iFrame Kaynakları
+- ✅ **Tüm Kaynakları Göster**
+  - Hem iframe hem direkt video kaynakları listeleniyor
+  - Mavi "iFrame" etiketi ile görsel ayırt
+  - Debug log'unda kaynak türü ayrımı
+
+#### 🐛 Bug Düzeltmeleri
+- ✅ Popup focus kaybolması sorunu çözüldü (FocusScope)
+- ✅ TV kumandası ile navigasyon sorunları çözüldü (Focus widget)
+- ✅ iFrame kaynakları filtrelenmesi kaldırıldı
+
+**Detaylı Bilgi:** [docs/README.md](docs/README.md)
 
 ## 🗺️ Roadmap
 

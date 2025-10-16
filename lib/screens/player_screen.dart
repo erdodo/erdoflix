@@ -480,42 +480,76 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text(
-          'Kalite Seçin',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: widget.film.kaynaklar!.asMap().entries.map((entry) {
-              final index = entry.key;
-              final kaynak = entry.value;
-              final isSelected = index == _selectedKaynakIndex;
+      builder: (context) => FocusScope(
+        autofocus: true,
+        canRequestFocus: true,
+        onKeyEvent: (node, event) {
+          // BACK tuşu ile popup'ı kapat
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.goBack) {
+            Navigator.pop(context);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: const Text(
+            'Kalite Seçin',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: widget.film.kaynaklar!.asMap().entries.map((entry) {
+                final index = entry.key;
+                final kaynak = entry.value;
+                final isSelected = index == _selectedKaynakIndex;
 
-              return ListTile(
-                leading: Icon(
-                  isSelected
-                      ? Icons.check_circle
-                      : Icons.radio_button_unchecked,
-                  color: isSelected ? Colors.red : Colors.white70,
-                ),
-                title: Text(
-                  kaynak.baslik,
-                  style: TextStyle(
-                    color: isSelected ? Colors.red : Colors.white,
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
+                return Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent) {
+                      if (event.logicalKey == LogicalKeyboardKey.select ||
+                          event.logicalKey == LogicalKeyboardKey.enter) {
+                        Navigator.pop(context);
+                        _changeKaynak(index);
+                        return KeyEventResult.handled;
+                      }
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: Builder(
+                    builder: (context) {
+                      final isFocused = Focus.of(context).hasFocus;
+                      return ListTile(
+                        tileColor: isFocused
+                            ? Colors.red.withOpacity(0.3)
+                            : Colors.transparent,
+                        leading: Icon(
+                          isSelected
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: isSelected ? Colors.red : Colors.white70,
+                        ),
+                        title: Text(
+                          kaynak.baslik,
+                          style: TextStyle(
+                            color: isSelected ? Colors.red : Colors.white,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _changeKaynak(index);
+                        },
+                      );
+                    },
                   ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _changeKaynak(index);
-                },
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
       ),
@@ -528,71 +562,126 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text(
-          'Altyazı Seçin',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Altyazı yok seçeneği
-              ListTile(
-                leading: Icon(
-                  _selectedAltyaziIndex == -1
-                      ? Icons.check_circle
-                      : Icons.radio_button_unchecked,
-                  color: _selectedAltyaziIndex == -1
-                      ? Colors.red
-                      : Colors.white70,
-                ),
-                title: Text(
-                  'Altyazı Yok',
-                  style: TextStyle(
-                    color: _selectedAltyaziIndex == -1
-                        ? Colors.red
-                        : Colors.white,
-                    fontWeight: _selectedAltyaziIndex == -1
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _changeSubtitle(-1);
-                },
-              ),
-              // Altyazı listesi
-              ...altyazilar.asMap().entries.map((entry) {
-                final index = entry.key;
-                final altyazi = entry.value;
-                final isSelected = index == _selectedAltyaziIndex;
-
-                return ListTile(
-                  leading: Icon(
-                    isSelected
-                        ? Icons.check_circle
-                        : Icons.radio_button_unchecked,
-                    color: isSelected ? Colors.red : Colors.white70,
-                  ),
-                  title: Text(
-                    altyazi.baslik,
-                    style: TextStyle(
-                      color: isSelected ? Colors.red : Colors.white,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _changeSubtitle(index);
+      builder: (context) => FocusScope(
+        autofocus: true,
+        canRequestFocus: true,
+        onKeyEvent: (node, event) {
+          // BACK tuşu ile popup'ı kapat
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.goBack) {
+            Navigator.pop(context);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: const Text(
+            'Altyazı Seçin',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Altyazı yok seçeneği
+                Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent) {
+                      if (event.logicalKey == LogicalKeyboardKey.select ||
+                          event.logicalKey == LogicalKeyboardKey.enter) {
+                        Navigator.pop(context);
+                        _changeSubtitle(-1);
+                        return KeyEventResult.handled;
+                      }
+                    }
+                    return KeyEventResult.ignored;
                   },
-                );
-              }).toList(),
-            ],
+                  child: Builder(
+                    builder: (context) {
+                      final isFocused = Focus.of(context).hasFocus;
+                      return ListTile(
+                        tileColor: isFocused
+                            ? Colors.red.withOpacity(0.3)
+                            : Colors.transparent,
+                        leading: Icon(
+                          _selectedAltyaziIndex == -1
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: _selectedAltyaziIndex == -1
+                              ? Colors.red
+                              : Colors.white70,
+                        ),
+                        title: Text(
+                          'Altyazı Yok',
+                          style: TextStyle(
+                            color: _selectedAltyaziIndex == -1
+                                ? Colors.red
+                                : Colors.white,
+                            fontWeight: _selectedAltyaziIndex == -1
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _changeSubtitle(-1);
+                        },
+                      );
+                    },
+                  ),
+                ),
+                // Altyazı listesi
+                ...altyazilar.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final altyazi = entry.value;
+                  final isSelected = index == _selectedAltyaziIndex;
+
+                  return Focus(
+                    onKeyEvent: (node, event) {
+                      if (event is KeyDownEvent) {
+                        if (event.logicalKey == LogicalKeyboardKey.select ||
+                            event.logicalKey == LogicalKeyboardKey.enter) {
+                          Navigator.pop(context);
+                          _changeSubtitle(index);
+                          return KeyEventResult.handled;
+                        }
+                      }
+                      return KeyEventResult.ignored;
+                    },
+                    child: Builder(
+                      builder: (context) {
+                        final isFocused = Focus.of(context).hasFocus;
+                        return ListTile(
+                          tileColor: isFocused
+                              ? Colors.red.withOpacity(0.3)
+                              : Colors.transparent,
+                          leading: Icon(
+                            isSelected
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: isSelected ? Colors.red : Colors.white70,
+                          ),
+                          title: Text(
+                            altyazi.baslik,
+                            style: TextStyle(
+                              color: isSelected ? Colors.red : Colors.white,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            _changeSubtitle(index);
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
           ),
         ),
       ),
@@ -926,45 +1015,82 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void _showHizMenu() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text(
-          'Oynatma Hızı',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: _playbackSpeeds.asMap().entries.map((entry) {
-              final index = entry.key;
-              final speed = entry.value;
-              final isSelected = index == _selectedSpeedIndex;
+      builder: (context) => FocusScope(
+        autofocus: true,
+        canRequestFocus: true,
+        onKeyEvent: (node, event) {
+          // BACK tuşu ile popup'ı kapat
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.goBack) {
+            Navigator.pop(context);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: const Text(
+            'Oynatma Hızı',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _playbackSpeeds.asMap().entries.map((entry) {
+                final index = entry.key;
+                final speed = entry.value;
+                final isSelected = index == _selectedSpeedIndex;
 
-              return ListTile(
-                leading: Icon(
-                  isSelected
-                      ? Icons.check_circle
-                      : Icons.radio_button_unchecked,
-                  color: isSelected ? Colors.red : Colors.white70,
-                ),
-                title: Text(
-                  '${speed}x',
-                  style: TextStyle(
-                    color: isSelected ? Colors.red : Colors.white,
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
+                return Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent) {
+                      if (event.logicalKey == LogicalKeyboardKey.select ||
+                          event.logicalKey == LogicalKeyboardKey.enter) {
+                        Navigator.pop(context);
+                        setState(() {
+                          _selectedSpeedIndex = index;
+                          _videoPlayerController?.setPlaybackSpeed(speed);
+                        });
+                        return KeyEventResult.handled;
+                      }
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: Builder(
+                    builder: (context) {
+                      final isFocused = Focus.of(context).hasFocus;
+                      return ListTile(
+                        tileColor: isFocused
+                            ? Colors.red.withOpacity(0.3)
+                            : Colors.transparent,
+                        leading: Icon(
+                          isSelected
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: isSelected ? Colors.red : Colors.white70,
+                        ),
+                        title: Text(
+                          '${speed}x',
+                          style: TextStyle(
+                            color: isSelected ? Colors.red : Colors.white,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            _selectedSpeedIndex = index;
+                            _videoPlayerController?.setPlaybackSpeed(speed);
+                          });
+                        },
+                      );
+                    },
                   ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    _selectedSpeedIndex = index;
-                    _videoPlayerController?.setPlaybackSpeed(speed);
-                  });
-                },
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
       ),

@@ -14,6 +14,7 @@ class ApiService {
 
   Map<String, String> get _headers => {
     'accept': 'application/json',
+    'Content-Type': 'application/json',
     'Authorization': 'Bearer $apiToken',
     'X-Locale': 'en-US',
     'X-Role': 'root',

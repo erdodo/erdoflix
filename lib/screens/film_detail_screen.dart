@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +38,10 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
   List<Kaynak> _discoveredSources = [];
   List<Altyazi> _discoveredSubtitles = [];
   bool _isCollectingSources = false;
+  
+  // Stream subscriptions
+  StreamSubscription<List<Kaynak>>? _sourcesSubscription;
+  StreamSubscription<List<Altyazi>>? _subtitlesSubscription;
 
   @override
   void initState() {
@@ -47,6 +52,8 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
 
   @override
   void dispose() {
+    _sourcesSubscription?.cancel();
+    _subtitlesSubscription?.cancel();
     _sourceCollector.dispose();
     super.dispose();
   }
@@ -78,6 +85,20 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
     setState(() {
       // widget.film'i kullan (zaten detaylı)
       _detailedFilm = widget.film;
+      
+      // Filmin mevcut kaynaklarını listeye ekle (hem iframe hem direkt kaynaklar)
+      if (widget.film.kaynaklar != null && widget.film.kaynaklar!.isNotEmpty) {
+        // Tüm kaynakları al (iframe ve direkt)
+        _discoveredSources = widget.film.kaynaklar!.toList();
+        debugPrint('📹 ${_discoveredSources.length} mevcut video kaynağı yüklendi (iframe: ${_discoveredSources.where((k) => k.isIframe == true).length}, direkt: ${_discoveredSources.where((k) => k.isIframe == false).length})');
+      }
+      
+      // Filmin mevcut altyazılarını listeye ekle
+      if (widget.film.altyazilar != null && widget.film.altyazilar!.isNotEmpty) {
+        _discoveredSubtitles = widget.film.altyazilar!.toList();
+        debugPrint('📝 ${_discoveredSubtitles.length} mevcut altyazı yüklendi');
+      }
+      
       _isLoading = false;
     });
   }
@@ -104,20 +125,30 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
     );
 
     // Stream'leri dinle - UI'ı real-time güncellemek için
-    _sourceCollector.sourcesStream.listen((sources) {
-      setState(() {
-        _discoveredSources = sources;
-      });
-      debugPrint(
-        '✅ SOURCE COLLECTION: ${sources.length} video kaynağı bulundu',
-      );
+    _sourcesSubscription = _sourceCollector.sourcesStream.listen((sources) {
+      if (mounted) {
+        setState(() {
+          // Yeni kaynakları mevcut kaynaklara ekle (duplicate olmadan)
+          final existingUrls = _discoveredSources.map((s) => s.url).toSet();
+          final newSources = sources.where((s) => !existingUrls.contains(s.url)).toList();
+          _discoveredSources = [..._discoveredSources, ...newSources];
+        });
+        debugPrint(
+          '✅ SOURCE COLLECTION: Toplam ${_discoveredSources.length} video kaynağı (${sources.length} yeni)',
+        );
+      }
     });
 
-    _sourceCollector.subtitlesStream.listen((subtitles) {
-      setState(() {
-        _discoveredSubtitles = subtitles;
-      });
-      debugPrint('✅ SOURCE COLLECTION: ${subtitles.length} altyazı bulundu');
+    _subtitlesSubscription = _sourceCollector.subtitlesStream.listen((subtitles) {
+      if (mounted) {
+        setState(() {
+          // Yeni altyazıları mevcut altyazılara ekle (duplicate olmadan)
+          final existingUrls = _discoveredSubtitles.map((s) => s.url).toSet();
+          final newSubtitles = subtitles.where((s) => !existingUrls.contains(s.url)).toList();
+          _discoveredSubtitles = [..._discoveredSubtitles, ...newSubtitles];
+        });
+        debugPrint('✅ SOURCE COLLECTION: Toplam ${_discoveredSubtitles.length} altyazı (${subtitles.length} yeni)');
+      }
     });
 
     // Her iframe kaynağı için toplamayı başlat (sırayla)
@@ -404,8 +435,33 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                   Divider(height: 1, color: Colors.white.withOpacity(0.1)),
               itemBuilder: (context, index) {
                 final source = _discoveredSources[index];
-                return ListTile(
-                  leading: Container(
+                return Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent) {
+                      if (event.logicalKey == LogicalKeyboardKey.select ||
+                          event.logicalKey == LogicalKeyboardKey.enter) {
+                        debugPrint('🎬 Kaynak tıklandı: ${source.baslik}');
+                        debugPrint('📹 URL: ${source.url}');
+                        context.go('/player/${widget.film.id}', extra: widget.film);
+                        return KeyEventResult.handled;
+                      }
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: Builder(
+                    builder: (context) {
+                      final isFocused = Focus.of(context).hasFocus;
+                      return ListTile(
+                        tileColor: isFocused
+                            ? AppTheme.primary.withOpacity(0.3)
+                            : Colors.transparent,
+                        onTap: () {
+                          debugPrint('🎬 Kaynak tıklandı: ${source.baslik}');
+                          debugPrint('📹 URL: ${source.url}');
+                          // Player'a git ve kaynağı geç
+                          context.go('/player/${widget.film.id}', extra: widget.film);
+                        },
+                        leading: Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
@@ -434,6 +490,31 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // iFrame etiketi
+                      if (source.isIframe == true) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.2),
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'iFrame',
+                            style: AppTheme.labelSmall.copyWith(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                       Icon(
                         Icons.check_circle,
                         color: AppTheme.success,
@@ -447,6 +528,9 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                         ),
                       ),
                     ],
+                  ),
+                );
+                    },
                   ),
                 );
               },
