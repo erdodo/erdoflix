@@ -318,7 +318,9 @@ class SourceCollectorService {
   Future<void> _handleSubtitleSource(String url, int filmId) async {
     // Duplicate kontrolü - sadece local check
     if (_discoveredSubtitleUrls.contains(url)) {
-      debugPrint('⏭️  SOURCE COLLECTOR: Altyazı local cache\'de var, atlanıyor');
+      debugPrint(
+        '⏭️  SOURCE COLLECTOR: Altyazı local cache\'de var, atlanıyor',
+      );
       return;
     }
 
@@ -335,7 +337,9 @@ class SourceCollectorService {
 
     // Veritabanında kontrol et
     try {
-      final existingSubtitlesData = await _apiService.getFilmAltyazilari(filmId);
+      final existingSubtitlesData = await _apiService.getFilmAltyazilari(
+        filmId,
+      );
       final alreadyExists = existingSubtitlesData.any((a) => a['url'] == url);
 
       if (alreadyExists) {

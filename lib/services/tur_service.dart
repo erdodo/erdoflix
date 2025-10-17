@@ -8,7 +8,7 @@ class TurService {
   // Token updated: 15 Ekim 2025
   // Expires: 18 Ekim 2025 (3 gün geçerli)
   static const String apiToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInRlbXAiOnRydWUsImlhdCI6MTc2MDU1NDg3Miwic2lnbkluVGltZSI6MTc2MDU1NDg3MjE4NSwiZXhwIjoxNzYwODE0MDcyLCJqdGkiOiIwYzExYTJlNC03NjQ0LTQ4MjUtYjU0NC1kN2JmNmRhMWM5MjUifQ.DMKZ8cWtBC1zCebB13zmu9G6krXb3Dq0fZT3CtwxAcs';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGVOYW1lIjoicm9vdCIsImlhdCI6MTc2MDcwMDMzNywiZXhwIjoxODkyMzczOTM3fQ.XftHs-IyERw51c3EqoZ_qQ3hMQtWJEjNJ-MRmTh8oaI';
 
   static Map<String, String> _getHeaders() {
     return {

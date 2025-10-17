@@ -215,8 +215,8 @@ _Şu anda bilinen aktif sorun yok._
 
 ## 👥 Katkıda Bulunanlar
 
-**Geliştirici:** Erdoğan Yeşil  
-**Tarih:** Ekim 2025  
+**Geliştirici:** Erdoğan Yeşil
+**Tarih:** Ekim 2025
 **Platform:** Flutter 3.35.6 / Dart 3.6
 
 ---

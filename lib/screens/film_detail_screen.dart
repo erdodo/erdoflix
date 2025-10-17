@@ -38,7 +38,7 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
   List<Kaynak> _discoveredSources = [];
   List<Altyazi> _discoveredSubtitles = [];
   bool _isCollectingSources = false;
-  
+
   // Stream subscriptions
   StreamSubscription<List<Kaynak>>? _sourcesSubscription;
   StreamSubscription<List<Altyazi>>? _subtitlesSubscription;
@@ -85,20 +85,23 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
     setState(() {
       // widget.film'i kullan (zaten detaylı)
       _detailedFilm = widget.film;
-      
+
       // Filmin mevcut kaynaklarını listeye ekle (hem iframe hem direkt kaynaklar)
       if (widget.film.kaynaklar != null && widget.film.kaynaklar!.isNotEmpty) {
         // Tüm kaynakları al (iframe ve direkt)
         _discoveredSources = widget.film.kaynaklar!.toList();
-        debugPrint('📹 ${_discoveredSources.length} mevcut video kaynağı yüklendi (iframe: ${_discoveredSources.where((k) => k.isIframe == true).length}, direkt: ${_discoveredSources.where((k) => k.isIframe == false).length})');
+        debugPrint(
+          '📹 ${_discoveredSources.length} mevcut video kaynağı yüklendi (iframe: ${_discoveredSources.where((k) => k.isIframe == true).length}, direkt: ${_discoveredSources.where((k) => k.isIframe == false).length})',
+        );
       }
-      
+
       // Filmin mevcut altyazılarını listeye ekle
-      if (widget.film.altyazilar != null && widget.film.altyazilar!.isNotEmpty) {
+      if (widget.film.altyazilar != null &&
+          widget.film.altyazilar!.isNotEmpty) {
         _discoveredSubtitles = widget.film.altyazilar!.toList();
         debugPrint('📝 ${_discoveredSubtitles.length} mevcut altyazı yüklendi');
       }
-      
+
       _isLoading = false;
     });
   }
@@ -130,7 +133,9 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
         setState(() {
           // Yeni kaynakları mevcut kaynaklara ekle (duplicate olmadan)
           final existingUrls = _discoveredSources.map((s) => s.url).toSet();
-          final newSources = sources.where((s) => !existingUrls.contains(s.url)).toList();
+          final newSources = sources
+              .where((s) => !existingUrls.contains(s.url))
+              .toList();
           _discoveredSources = [..._discoveredSources, ...newSources];
         });
         debugPrint(
@@ -139,15 +144,21 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
       }
     });
 
-    _subtitlesSubscription = _sourceCollector.subtitlesStream.listen((subtitles) {
+    _subtitlesSubscription = _sourceCollector.subtitlesStream.listen((
+      subtitles,
+    ) {
       if (mounted) {
         setState(() {
           // Yeni altyazıları mevcut altyazılara ekle (duplicate olmadan)
           final existingUrls = _discoveredSubtitles.map((s) => s.url).toSet();
-          final newSubtitles = subtitles.where((s) => !existingUrls.contains(s.url)).toList();
+          final newSubtitles = subtitles
+              .where((s) => !existingUrls.contains(s.url))
+              .toList();
           _discoveredSubtitles = [..._discoveredSubtitles, ...newSubtitles];
         });
-        debugPrint('✅ SOURCE COLLECTION: Toplam ${_discoveredSubtitles.length} altyazı (${subtitles.length} yeni)');
+        debugPrint(
+          '✅ SOURCE COLLECTION: Toplam ${_discoveredSubtitles.length} altyazı (${subtitles.length} yeni)',
+        );
       }
     });
 
@@ -442,7 +453,10 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                           event.logicalKey == LogicalKeyboardKey.enter) {
                         debugPrint('🎬 Kaynak tıklandı: ${source.baslik}');
                         debugPrint('📹 URL: ${source.url}');
-                        context.go('/player/${widget.film.id}', extra: widget.film);
+                        context.go(
+                          '/player/${widget.film.id}',
+                          extra: widget.film,
+                        );
                         return KeyEventResult.handled;
                       }
                     }
@@ -459,77 +473,82 @@ class _FilmDetailScreenState extends State<FilmDetailScreen> {
                           debugPrint('🎬 Kaynak tıklandı: ${source.baslik}');
                           debugPrint('📹 URL: ${source.url}');
                           // Player'a git ve kaynağı geç
-                          context.go('/player/${widget.film.id}', extra: widget.film);
+                          context.go(
+                            '/player/${widget.film.id}',
+                            extra: widget.film,
+                          );
                         },
                         leading: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.primaryGradient,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.play_circle_filled,
-                      color: Colors.white,
-                    ),
-                  ),
-                  title: Text(
-                    source.baslik,
-                    style: AppTheme.bodyLarge.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  subtitle: Text(
-                    source.url.length > 50
-                        ? '${source.url.substring(0, 50)}...'
-                        : source.url,
-                    style: AppTheme.bodySmall.copyWith(color: Colors.white70),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // iFrame etiketi
-                      if (source.isIframe == true) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.2),
-                            border: Border.all(
-                              color: Colors.blue,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(4),
+                            gradient: AppTheme.primaryGradient,
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
-                            'iFrame',
-                            style: AppTheme.labelSmall.copyWith(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: const Icon(
+                            Icons.play_circle_filled,
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                      ],
-                      Icon(
-                        Icons.check_circle,
-                        color: AppTheme.success,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Kaydedildi',
-                        style: AppTheme.labelSmall.copyWith(
-                          color: AppTheme.success,
+                        title: Text(
+                          source.baslik,
+                          style: AppTheme.bodyLarge.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
+                        subtitle: Text(
+                          source.url.length > 50
+                              ? '${source.url.substring(0, 50)}...'
+                              : source.url,
+                          style: AppTheme.bodySmall.copyWith(
+                            color: Colors.white70,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // iFrame etiketi
+                            if (source.isIframe == true) ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.2),
+                                  border: Border.all(
+                                    color: Colors.blue,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  'iFrame',
+                                  style: AppTheme.labelSmall.copyWith(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Icon(
+                              Icons.check_circle,
+                              color: AppTheme.success,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Kaydedildi',
+                              style: AppTheme.labelSmall.copyWith(
+                                color: AppTheme.success,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 );

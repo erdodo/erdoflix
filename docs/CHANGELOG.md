@@ -22,7 +22,7 @@
 - `lib/screens/film_detail_screen.dart` (90+ satır değişiklik)
   - Kaynak listesi Focus widget implementasyonu
   - D-pad navigasyon desteği
-  
+
 - `lib/screens/player_screen.dart` (180+ satır değişiklik)
   - Kaynak seçim menüsü FocusScope
   - Altyazı seçim menüsü FocusScope
@@ -230,7 +230,7 @@ if (source.isIframe == true) ...[
 
 ---
 
-**Tarih:** 16 Ekim 2025  
-**Versiyon:** 1.2.0  
-**Platform:** Flutter 3.35.6 / Dart 3.6  
+**Tarih:** 16 Ekim 2025
+**Versiyon:** 1.2.0
+**Platform:** Flutter 3.35.6 / Dart 3.6
 **Test Ortamı:** Android TV Emulator (localhost:5555)
